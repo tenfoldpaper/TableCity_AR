@@ -7,6 +7,7 @@ public class WorldController : MonoBehaviour
 
     public static WorldController Instance { get; protected set; }
     public Sprite floorSprite;
+    public Sprite roadSprite;
 
     public World world { get; protected set; }
     // Start is called before the first frame update
@@ -39,6 +40,33 @@ public class WorldController : MonoBehaviour
         }
         world.RandomizeTiles();
     }
+    //Creates Road inbetween start and end
+    //Maybe move this function somewhere more appropriate
+    void CreateRoad(Vector3 start, Vector3 end)
+    {
+        int x_s = (int)start.x;
+        int y_s = (int)start.y;
+        int x_e = (int)end.x;
+        int y_e = (int)end.y;
+        int x = x_s < x_e ? x_s : x_e;
+        int y = y_s < y_e ? y_s : y_e;
+        for (; x < (x_s > x_e?x_s:x_e); x++)
+        {
+            Tile t = WorldController.Instance.world.GetTileAt(x, y);
+            if (t != null)
+            {
+                t.Type = Tile.TileType.Road;
+            }
+        }
+        for (; y < (y_s > y_e ? y_s : y_e); y++)
+        {
+            Tile t = WorldController.Instance.world.GetTileAt(x, y);
+            if (t != null)
+            {
+                t.Type = Tile.TileType.Road;
+            }
+        }
+    }
 
     float randomizeTileTimer = 2f;
     // Update is called once per frame
@@ -58,6 +86,10 @@ public class WorldController : MonoBehaviour
         else if (tile_data.Type == Tile.TileType.Empty)
         {
             tile_go.GetComponent<SpriteRenderer>().sprite = null;
+        }
+        else if (tile_data.Type == Tile.TileType.Road)
+        {
+            tile_go.GetComponent<SpriteRenderer>().sprite = roadSprite;
         }
         else
         {

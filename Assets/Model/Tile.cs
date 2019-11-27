@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class Tile {
 
-    public enum TileType { Empty, Floor };
+    public enum TileType { Empty, Floor, Road};
     //Action<int, string, float> someFunction;
-
+    public bool highlighted = false;
     Action<Tile> cbTileTypeChanged;
 
     public TileType Type
