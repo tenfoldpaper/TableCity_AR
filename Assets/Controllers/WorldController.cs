@@ -132,13 +132,10 @@ public class WorldController : MonoBehaviour
 
     public void OnFurnitureCreated(Furniture furn)
     {
-        //Debug.Log("OnFurnitureCreated");
-        // Create a visual GameObject linked to this data.
+     
 
-        // FIXME: Does not consider multi-tile objects nor rotated objects
-
-        // This creates a new GameObject and adds it to our scene.
         GameObject furn_go = new GameObject();
+        //furn_go.AddComponent<SpriteRenderer>().sortingOrder = 1;
         
 
         // Add our tile/GO pair to the dictionary.
@@ -152,6 +149,7 @@ public class WorldController : MonoBehaviour
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
+        furn_go.GetComponent<SpriteRenderer>().sortingOrder = 1;
         furn.RegisterOnChangedCallback(OnFurnitureChanged);
 
     }

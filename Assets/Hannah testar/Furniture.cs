@@ -49,6 +49,7 @@ public class Furniture
     {
         Furniture obj = new Furniture();
 
+
         obj.objectType = proto.objectType;
         obj.width = proto.width;
         obj.height = proto.height;
@@ -56,7 +57,6 @@ public class Furniture
 
         obj.tile = tile;
 
-        // FIXME: This assumes we are 1x1!
         if (tile.PlaceFurniture(obj) == false)
         {
             // For some reason, we weren't able to place our object in this tile.
