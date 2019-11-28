@@ -49,6 +49,23 @@ public class World {
             }
         }
     }
+    void CreateRoad(Vector3 start, Vector3 end)
+    {
+    }
+    public bool Occupied(int tile_x, int tile_y, int w, int h)
+    {
+        for (int x = tile_x; x < w; x++)
+        {
+            for (int y = tile_y; y < h; y++)
+            {
+                Tile t = GetTileAt(x, y);
+                if (t != null)
+                    if (t.isOccupied())
+                        return true;
+            }
+        }
+        return false;
+    }
     public Tile GetTileAt(int x, int y)
     {
         if (x >= width || x < 0 || y >= height || y < 0)

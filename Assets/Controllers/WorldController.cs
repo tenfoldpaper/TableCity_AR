@@ -33,6 +33,7 @@ public class WorldController : MonoBehaviour
                 tile_go.transform.SetParent(this.transform, false);
                 // Add a sprite renderer, but don't set a sprite since they are all empty
                 SpriteRenderer tile_sr = tile_go.AddComponent<SpriteRenderer>();
+                tile_data.gameObject = tile_go;
 
                 tile_data.RegisterTileTypeChangedCallback( (tile) => { OnTileTypeChanged(tile, tile_go); }  );
                 
@@ -40,31 +41,61 @@ public class WorldController : MonoBehaviour
         }
         world.RandomizeTiles();
     }
-    //Creates Road inbetween start and end
-    //Maybe move this function somewhere more appropriate
-    void CreateRoad(Vector3 start, Vector3 end)
+    //Creates an L set inbetween start and endpoint
+    //TODO apply a function to each tile instead
+    public List<Tile> GetLPathSet(int x_start, int y_start, int x_end, int y_end)
     {
-        int x_s = (int)start.x;
-        int y_s = (int)start.y;
-        int x_e = (int)end.x;
-        int y_e = (int)end.y;
+        List<Tile> set = new List<Tile>();
+        int x_s = x_start;
+        int y_s = y_start;
+        int x_e = x_end;
+        int y_e = y_end;
         int x = x_s < x_e ? x_s : x_e;
         int y = y_s < y_e ? y_s : y_e;
-        for (; x < (x_s > x_e?x_s:x_e); x++)
+        if (Mathf.Abs(x_s - x_e) > Mathf.Abs(y_s - y_e))
         {
-            Tile t = WorldController.Instance.world.GetTileAt(x, y);
-            if (t != null)
+            for (; x < (x_s > x_e ? x_s : x_e); x++)
             {
-                t.Type = Tile.TileType.Road;
+                Tile t = WorldController.Instance.world.GetTileAt(x, y);
+                if (t != null)
+                {
+                    set.Add(t);
+                }
+            }
+            for (; y <= (y_s > y_e ? y_s : y_e); y++)
+            {
+                Tile t = WorldController.Instance.world.GetTileAt(x, y);
+                if (t != null)
+                {
+                    set.Add(t);
+                }
             }
         }
-        for (; y < (y_s > y_e ? y_s : y_e); y++)
+        else
         {
-            Tile t = WorldController.Instance.world.GetTileAt(x, y);
-            if (t != null)
+            for (; y < (y_s > y_e ? y_s : y_e); y++)
             {
-                t.Type = Tile.TileType.Road;
+                Tile t = WorldController.Instance.world.GetTileAt(x, y);
+                if (t != null)
+                {
+                    set.Add(t);
+                }
             }
+            for (; x <= (x_s > x_e ? x_s : x_e); x++)
+            {
+                Tile t = WorldController.Instance.world.GetTileAt(x, y);
+                if (t != null)
+                {
+                    set.Add(t);
+                }
+            }
+        }
+        return set;
+    }
+    public void CreateRoad(List<Tile> set)
+    {
+        foreach(Tile t in set) {
+            t.Type = Tile.TileType.Road;
         }
     }
 

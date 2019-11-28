@@ -625,3 +625,5 @@ MonoBehaviour:
   gamePlane: {fileID: 1172558027}
   tileMenu: {fileID: 7063024160930682953, guid: deccf51e89340754c8a0b7c634a974eb,
     type: 3}
+  draging: 0
+  currentType: -1

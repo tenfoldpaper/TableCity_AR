@@ -5,9 +5,71 @@ using UnityEngine;
 
 public class Tile {
 
-    public enum TileType { Empty, Floor, Road};
+    public enum TileType { Empty, Floor, Road };
     //Action<int, string, float> someFunction;
-    public bool highlighted = false;
+    public GameObject gameObject;
+    public bool electricity;
+    public bool water;
+    bool highlightedValue = false;
+    public bool highlighted
+    {
+        get
+        {
+            return highlightedValue;
+        }
+        set
+        {
+            bool old = highlightedValue;
+            highlightedValue = value;
+            if (old != highlightedValue)
+            {
+                if (!old)
+                    gameObject.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 1f, 1f);
+                else
+                    gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+            }
+        }
+    }
+    bool occupiedHighlightedValue = false;
+    public bool occupiedHighlighted
+    {
+        get
+        {
+            return occupiedHighlightedValue;
+        }
+        set
+        {
+            bool old = occupiedHighlightedValue;
+            occupiedHighlightedValue = value;
+            if (old != occupiedHighlightedValue)
+            {
+                if (!old)
+                    gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 0.5f, 0.5f, 1f);
+                else
+                    gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+            }
+        }
+    }
+    bool transparentValue = false;
+    public bool transparent
+    {
+        get
+        {
+            return transparentValue;
+        }
+        set
+        {
+            bool old = transparentValue;
+            transparentValue = value;
+            if (old != transparentValue)
+            {
+                if(!old)
+                    gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, .5f);
+                else
+                    gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+            }
+        }
+    }
     Action<Tile> cbTileTypeChanged;
 
     public TileType Type
@@ -34,6 +96,7 @@ public class Tile {
 
     LooseObject looseObject;
     InstalledObject installedObject;
+    
 
     World world;
     public int X { get; protected set;}
@@ -46,6 +109,17 @@ public class Tile {
         this.X = x;
         this.Y = y;
 
+    }
+    public bool isOccupied()
+    {
+        switch (type)
+        {
+            case TileType.Floor:
+            case TileType.Empty:
+                return false;
+            default:
+                return true;
+        }
     }
 
     public void RegisterTileTypeChangedCallback(Action<Tile> callback)

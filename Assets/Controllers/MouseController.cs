@@ -6,6 +6,8 @@ using UnityEngine.EventSystems;
 
 public class MouseController : MonoBehaviour
 {
+
+    public static MouseController Instance { get; protected set; }
     public GameObject circleCursor;
     public Collider gamePlane;
     public GameObject tileMenu;
@@ -13,19 +15,58 @@ public class MouseController : MonoBehaviour
     Vector3 dragStartPosition;
     Vector3 lastFramePosition;
     Tile tileDragStart;
-    bool draging;
+    public bool draging;
+    public int currentType = -1;
+    List<Tile> transparentTiles = new List<Tile>();
+    List<Tile> highlightedTiles = new List<Tile>();
     // Start is called before the first frame update
     void Start()
     {
+        if (Instance != null)
+        {
+            Debug.LogError("There should never be two mouse controllers.");
+        }
+        Instance = this;
+    }
+    
+    // Update is called once per frame
+    void Update()
+    {
+
+        Vector3 currFramePosition = GetGamePlaneIntersectionPoint();
+        Tile tileUnderMouse = GetTileAtWorldCoord(currFramePosition);
+        UpdateCursor(tileUnderMouse);
+
+        foreach (Tile t in highlightedTiles)
+        {
+            t.highlighted = false;
+        }
+        highlightedTiles.Clear();
+        HighlightTiles(tileUnderMouse);
+        foreach (Tile t in highlightedTiles)
+        {
+            t.highlighted = true;
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            OnLeftMouseButtonDown(currFramePosition);
+        }
+        if (Input.GetMouseButtonUp(0))
+        {
+            OnLeftMouseButtonUp(currFramePosition);
+        }
+        UpdateCamera();
         
     }
-    void onLeftMouseButtonDown(Vector3 currFramePosition)
+    void OnLeftMouseButtonDown(Vector3 currFramePosition)
     {
-        dragStartPosition = currFramePosition;
-        if(currentMenu != null && currentMenu.activeSelf)
+        if (currentMenu != null && currentMenu.activeSelf)
         {
-            PointerEventData eventData = new PointerEventData(GetComponent<EventSystem>());
-            eventData.position = Input.mousePosition;
+            PointerEventData eventData = new PointerEventData(GetComponent<EventSystem>())
+            {
+                position = Input.mousePosition
+            };
             List<RaycastResult> results = new List<RaycastResult>();
             currentMenu.GetComponent<GraphicRaycaster>().Raycast(eventData, results);
             bool found = false;
@@ -42,122 +83,105 @@ public class MouseController : MonoBehaviour
             {
                 currentMenu.SetActive(false);
             }
-           
-        } else
+
+        }
+        else
         {
-            if (currentMenu == null)
+            if (draging)
             {
-                currentMenu = Instantiate(tileMenu, currFramePosition, Quaternion.identity);
+                if (currentType == 0)
+                {
+                    Tile tileEnd = GetTileAtWorldCoord(currFramePosition);
+                    List<Tile> set = WorldController.Instance.GetLPathSet(tileDragStart.X, tileDragStart.Y, tileEnd.X, tileEnd.Y);
+                    WorldController.Instance.CreateRoad(set);
+                }
+                draging = false;
             }
-            currentMenu.transform.position = currFramePosition;
-            currentMenu.SetActive(true);
-            //call dynamicMenu();
-            //transform.parent = currentMenu;
+            else
+            {
+                dragStartPosition = currFramePosition;
+                if (currentMenu == null)
+                {
+                    currentMenu = Instantiate(tileMenu, currFramePosition, Quaternion.identity);
+                }
+                tileDragStart = GetTileAtWorldCoord(currFramePosition);
+                currentMenu.transform.position = currFramePosition;
+                currentMenu.SetActive(true);
+                //call dynamicMenu();
+                //transform.parent = currentMenu;
+            }
         }
         //Todo: dynamic menu
 
     }
-    void onLeftMouseButtonUp(Vector3 currFramePosition)
+    void OnLeftMouseButtonUp(Vector3 currFramePosition)
     {
-        if (draging)
-        {
-            //if(building_road) {
-            //  WorldController.CreateRoad(dragStartPosition, currFramePosition);
-            //}
-            draging = false;
-        }
-        /*
-        int start_x = Mathf.FloorToInt(dragStartPosition.x);
-        int start_y = Mathf.FloorToInt(dragStartPosition.y);
-        int end_x = Mathf.FloorToInt(currFramePosition.x);
-        int end_y = Mathf.FloorToInt(currFramePosition.y);
-
-        if (end_x < start_x)
-        {
-            int tmp = end_x;
-            end_x = start_x;
-            start_x = tmp;
-        }
-
-        if (end_y < start_y)
-        {
-            int tmp = end_y;
-            end_y = start_y;
-            start_y = tmp;
-        }
-
-        for (int x = start_x; x <= end_x; x++)
-        {
-            for (int y = start_y; y <= end_y; y++)
-            {
-                Tile t = WorldController.Instance.world.GetTileAt(x, y);
-                if (t != null)
-                {
-                    t.Type = Tile.TileType.Floor;
-                }
-            }
-        }
-        */
     }
-    // Update is called once per frame
-    void Update()
+    Vector3 GetGamePlaneIntersectionPoint()
     {
-
-
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
-        Vector3 currFramePosition;
         if (gamePlane.Raycast(ray, out hit, 1000.0f))
         {
-            currFramePosition = hit.point;
+            return hit.point;
         }
         else
         {
-            return;
+            return new Vector3(0, 0, 0);
         }
-
-        Tile tileUnderMouse = GetTileAtWorldCoord(currFramePosition);
+    }
+    void UpdateCursor(Tile tileUnderMouse)
+    {
         if (currentMenu == null || !currentMenu.activeSelf)
         {
-            if (tileUnderMouse != null) {
+            if (tileUnderMouse != null)
+            {
                 circleCursor.SetActive(true);
                 Vector3 cursorPosition = new Vector3(tileUnderMouse.X, tileUnderMouse.Y, 0);
                 circleCursor.transform.position = cursorPosition;
-                //Debug.Log(cursorPosition.x);       
             }
             else
             {
                 circleCursor.SetActive(false);
             }
         }
-        // Handle drags
-        if (Input.GetMouseButtonDown(0))
+    }
+    void HighlightTiles(Tile tileUnderMouse)
+    {
+        if (draging)
         {
-            onLeftMouseButtonDown(currFramePosition);
-        }
-
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            onLeftMouseButtonUp(currFramePosition);
-        }
-
-        // Handle left mouse clicks
-        if (Input.GetMouseButtonUp(0))
-        {
-            if(tileUnderMouse != null)
+            if (currentType == 0)
             {
-                if(tileUnderMouse.Type == Tile.TileType.Empty)
+                if (tileDragStart != null)
                 {
-                    //tileUnderMouse.Type = Tile.TileType.Floor;
-                }
-                else
-                {
-                    //tileUnderMouse.Type = Tile.TileType.Empty;
+                    highlightedTiles.AddRange(
+                        WorldController.Instance.GetLPathSet(tileDragStart.X, tileDragStart.Y,
+                        tileUnderMouse.X, tileUnderMouse.Y));
                 }
             }
         }
-
+        if (currentMenu != null && currentMenu.activeSelf)
+        {
+            PointerEventData eventData = new PointerEventData(GetComponent<EventSystem>());
+            eventData.position = Input.mousePosition;
+            List<RaycastResult> results = new List<RaycastResult>();
+            currentMenu.GetComponent<GraphicRaycaster>().Raycast(eventData, results);
+            foreach (RaycastResult result in results)
+            {
+                //Ugly hack
+                //TODO
+                if (result.gameObject.name == "Industrial")
+                {
+                    if (tileDragStart != null)
+                    {
+                        highlightedTiles.Add(tileDragStart);
+                    }
+                }
+            }
+        }
+    }
+    void UpdateCamera()
+    {
         // Handle screen dragging
         if (Input.GetMouseButton(2) || Input.GetMouseButton(1)) // Right or Middle mouse button
         {
@@ -181,9 +205,7 @@ public class MouseController : MonoBehaviour
 
         lastFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         lastFramePosition.z = 0;
-        
     }
-
     Tile GetTileAtWorldCoord(Vector3 coord)
     {
         int x = Mathf.FloorToInt(coord.x);
