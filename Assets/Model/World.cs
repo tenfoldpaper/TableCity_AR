@@ -1,56 +1,74 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class World {
 
     Tile[,] tiles;
-    int width;
-    public int Width
-    {
-        get
-        {
-            return width;
-        }
-    }
 
-    int height;
-    public int Height
-    {
-        get
-        {
-            return height;
-        }
-    }
+    Dictionary<string, Furniture> furniturePrototypes;
+
+    // The tile width of the world.
+    public int Width { get; protected set; }
+
+    // The tile height of the world
+    public int Height { get; protected set; }
+
+    Action<Furniture> cbFurnitureCreated;
+
     public World(int width = 100, int height = 100)
     {
-        this.width = width;
-        this.height = height;
+        Width = width;
+        Height = height;
 
-        tiles = new Tile[width, height];
+        tiles = new Tile[Width, Height];
 
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < Width; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < Height; y++)
             {
                 tiles[x, y] = new Tile(this, x, y);
             }
         }
-        Debug.Log("World created with " + (width * height) + "tiles.");
+
+        Debug.Log("World created with " + (Width * Height) + " tiles.");
+
+        CreateFurniturePrototypes();
+    }
+
+    void CreateFurniturePrototypes()
+    {
+        furniturePrototypes = new Dictionary<string, Furniture>();
+
+        furniturePrototypes.Add("Wall",
+            Furniture.CreatePrototype(
+                                "Wall",
+                                1,  // Width
+                                1,  // Height
+                                true // Links to neighbours and "sort of" becomes part of a large object
+                            )
+        );
+
+        furniturePrototypes.Add("Road",
+            Furniture.CreatePrototype(
+                                "Road",
+                                1,  // Width
+                                1,  // Height
+                                true // Links to neighbours and "sort of" becomes part of a large object
+                            )
+        );
     }
 
     public void RandomizeTiles()
     {
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < Width; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < Height; y++)
             {
                 tiles[x, y].Type = Tile.TileType.Floor;
             }
         }
-    }
-    void CreateRoad(Vector3 start, Vector3 end)
-    {
     }
     public bool Occupied(int tile_x, int tile_y, int w, int h)
     {
@@ -70,20 +88,46 @@ public class World {
     {
         if (x >= width || x < 0 || y >= height || y < 0)
         {
-            //Debug.LogError("Tile (" + x + ", " + y + ") is out of range\n");
             return null;
         }
         return tiles[x, y];
     }
-        //This might allow loading to take place dynamically, but probably just instantiating all of it right away is better
+
+    public void PlaceFurniture(string objectType, Tile t)
+    {
+
+        Furniture obj = Furniture.PlaceInstance(furniturePrototypes[objectType], t);
+
+        if (obj == null)
+        {
+            // Failed to place object -- most likely there was already something there.
+            return;
+        }
+
+        if (cbFurnitureCreated != null)
+        {
+            cbFurnitureCreated(obj);
+        }
+    }
+    //This might allow loading to take place dynamically, but probably just instantiating all of it right away is better
 
     public int GetHeight()
     {
-        return height;
+        return Height;
     }
 
     public int GetWidth()
     {
-        return width;
+        return Width;
+    }
+
+    public void RegisterFurnitureCreated(Action<Furniture> callbackfunc)
+    {
+        cbFurnitureCreated += callbackfunc;
+    }
+
+    public void UnregisterFurnitureCreated(Action<Furniture> callbackfunc)
+    {
+        cbFurnitureCreated -= callbackfunc;
     }
 }

@@ -19,6 +19,15 @@ public class MouseController : MonoBehaviour
     public int currentType = -1;
     List<Tile> transparentTiles = new List<Tile>();
     List<Tile> highlightedTiles = new List<Tile>();
+
+    bool buildModeIsObjects;
+    string buildModeObjectType;
+
+    public static Tile selected;
+    public static GameObject selectedObject;
+
+    public Canvas build;
+    public Canvas delete;
     // Start is called before the first frame update
     void Start()
     {
@@ -27,12 +36,17 @@ public class MouseController : MonoBehaviour
             Debug.LogError("There should never be two mouse controllers.");
         }
         Instance = this;
+        selected = null;
+        buildModeIsObjects = false;
     }
     
     // Update is called once per frame
     void Update()
     {
-
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
         Vector3 currFramePosition = GetGamePlaneIntersectionPoint();
         Tile tileUnderMouse = GetTileAtWorldCoord(currFramePosition);
         UpdateCursor(tileUnderMouse);
@@ -40,14 +54,15 @@ public class MouseController : MonoBehaviour
         foreach (Tile t in highlightedTiles)
         {
             t.highlighted = false;
-        }
+		}
+        
+        //BuildRoad();
         highlightedTiles.Clear();
         HighlightTiles(tileUnderMouse);
         foreach (Tile t in highlightedTiles)
         {
             t.highlighted = true;
         }
-
         if (Input.GetMouseButtonDown(0))
         {
             OnLeftMouseButtonDown(currFramePosition);
@@ -56,8 +71,7 @@ public class MouseController : MonoBehaviour
         {
             OnLeftMouseButtonUp(currFramePosition);
         }
-        UpdateCamera();
-        
+        UpdateCamera();        
     }
     void OnLeftMouseButtonDown(Vector3 currFramePosition)
     {
@@ -208,11 +222,77 @@ public class MouseController : MonoBehaviour
     }
     Tile GetTileAtWorldCoord(Vector3 coord)
     {
-        int x = Mathf.FloorToInt(coord.x);
-        int y = Mathf.FloorToInt(coord.y);
-
-        GameObject.FindObjectOfType<WorldController>();
+        int x = (int)coord.x;
+        int y = (int)coord.y;
 
         return WorldController.Instance.world.GetTileAt(x, y);
+    }
+	/*
+        if (!buildModeIsObjects)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                if (Physics.Raycast(ray, out hit))
+                    if (hit.transform != null)
+                    {
+                        Debug.Log("Hit " + hit.transform.gameObject.name + " " + hit.transform.gameObject);
+                        selectedObject = hit.transform.gameObject;
+                        delete.gameObject.SetActive(true);
+                        build.gameObject.SetActive(false);
+                        return;
+                    }
+
+                if (tileUnderMouse != null && selected != tileUnderMouse)
+                {
+                    selected = tileUnderMouse;
+                    Debug.Log(selected.X + "," + selected.Y);
+                    build.gameObject.SetActive(true);
+                    delete.gameObject.SetActive(false);
+                }
+                else if (tileUnderMouse != null && selected == tileUnderMouse)
+                {
+                    Debug.Log("Deselected " + selected.X + "," + selected.Y);
+                    selected = null;
+
+                    build.gameObject.SetActive(false);
+                    delete.gameObject.SetActive(false);
+                }
+            }
+        }
+        lastFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        lastFramePosition.z = 0;
+		*/
+    }
+
+    void BuildRoad()
+    {
+        if (buildModeIsObjects)
+        {
+            if (Input.GetMouseButton(0))
+            {
+                Tile t = WorldController.Instance.GetTileAtWorldCoord(currFramePosition);
+                if (t != null)
+                {
+                    WorldController.Instance.World.PlaceFurniture(buildModeObjectType, t);
+                }
+            }
+
+            if (Input.GetMouseButtonUp(0))
+            {
+                buildModeIsObjects = false;
+            }
+        }
+        else
+        {
+            //When selecting objects
+        }
+    }
+
+    public void SetMode_BuildRoad()
+    {
+        buildModeIsObjects = true;
+        buildModeObjectType = "Road";
+        build.gameObject.SetActive(false);
+        delete.gameObject.SetActive(false);
     }
 }
