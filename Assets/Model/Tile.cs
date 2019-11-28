@@ -3,61 +3,87 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum TileType { Empty, Floor };
+
 public class Tile {
 
-    public enum TileType { Empty, Floor };
     //Action<int, string, float> someFunction;
+
+  
+
+    private TileType _type = TileType.Empty;
+    public TileType Type
+    {
+        get { return _type; }
+        set
+        {
+            TileType oldType = _type;
+            _type = value;
+            // Call the callback and let things know we've changed.
+
+            if (cbTileTypeChanged != null && oldType != _type)
+                cbTileTypeChanged(this);
+        }
+    }
+
+    public Furniture furniture
+    {
+        get; protected set;
+    }
+
+    public World world { get; protected set; }
+
+    public int X { get; protected set; }
+    public int Y { get; protected set; }
 
     Action<Tile> cbTileTypeChanged;
 
-    public TileType Type
+    public Tile(World world, int x, int y)
     {
-        get
-        {
-            return type;
-        }
-        set
-        {
-            TileType oldType = type;
-            type = value;
-            // Call the callback and let things know the tile has been changed
-            // Action Delegate! A variable that holds the reference to a function in C#
-            if(cbTileTypeChanged != null && oldType != type)
-            {
-                cbTileTypeChanged(this);
-            }
-
-        }
+        this.world = world;
+        this.X = x;
+        this.Y = y;
     }
-    
+
     TileType type = TileType.Empty;
 
     LooseObject looseObject;
     InstalledObject installedObject;
 
-    World world;
-    public int X { get; protected set;}
-    
-    public int Y { get; protected set; }
-
-    public Tile( World world, int x, int y ){
-
-        this.world = world;
-        this.X = x;
-        this.Y = y;
-
-    }
-
     public void RegisterTileTypeChangedCallback(Action<Tile> callback)
     {
         cbTileTypeChanged += callback;
-        //This Action is an odd type of function, so something like
-        //cbTileTypeChanged += callback; is perfectly legal, and each of those additional funcitons will be run. 
     }
 
+    /// <summary>
+    /// Unregister a callback.
+    /// </summary>
     public void UnregisterTileTypeChangedCallback(Action<Tile> callback)
     {
         cbTileTypeChanged -= callback;
+    }
+
+    public bool PlaceFurniture(Furniture objInstance)
+    {
+        if (objInstance == null)
+        {
+            // We are uninstalling whatever was here before.
+            furniture = null;
+            return true;
+        }
+
+        // objInstance isn't null
+
+        if (furniture != null)
+        {
+            //Debug.LogError("Trying to assign a furniture to a tile that already has one!");
+            return false;
+        }
+
+        // At this point, everything's fine!
+
+        furniture = objInstance;
+        return true;
     }
 
 
