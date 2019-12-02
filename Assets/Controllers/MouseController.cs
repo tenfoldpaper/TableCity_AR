@@ -14,7 +14,7 @@ public class MouseController : MonoBehaviour
     GameObject currentMenu;
     Vector3 dragStartPosition;
     Vector3 lastFramePosition;
-    Tile tileDragStart;
+    
     public bool draging;
     public int currentType = -1;
     List<Tile> transparentTiles = new List<Tile>();
@@ -26,8 +26,9 @@ public class MouseController : MonoBehaviour
     public static Tile selected;
     public static GameObject selectedObject;
 
-    public Canvas build;
-    public Canvas delete;
+    private Tile startTile;
+    private Tile tileUnderMouse;
+    private Vector3 currFramePosition;
     // Start is called before the first frame update
     void Start()
     {
@@ -43,44 +44,38 @@ public class MouseController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (EventSystem.current.IsPointerOverGameObject())
-        {
-            return;
-        }
-        Vector3 currFramePosition = GetGamePlaneIntersectionPoint();
-        Tile tileUnderMouse = GetTileAtWorldCoord(currFramePosition);
-        UpdateCursor(tileUnderMouse);
+        currFramePosition = GetGamePlaneIntersectionPoint();
+        tileUnderMouse = GetTileAtWorldCoord(currFramePosition);
+        UpdateCursor();
 
         foreach (Tile t in highlightedTiles)
         {
             t.highlighted = false;
 		}
-        
-        //BuildRoad();
+
+        //BuildRoad(currFramePosition);
         highlightedTiles.Clear();
-        HighlightTiles(tileUnderMouse);
+        HighlightTiles();
         foreach (Tile t in highlightedTiles)
         {
             t.highlighted = true;
         }
         if (Input.GetMouseButtonDown(0))
         {
-            OnLeftMouseButtonDown(currFramePosition);
+            OnLeftMouseButtonDown();
         }
         if (Input.GetMouseButtonUp(0))
         {
-            OnLeftMouseButtonUp(currFramePosition);
+            OnLeftMouseButtonUp();
         }
-        UpdateCamera();        
+        UpdateCamera();
     }
-    void OnLeftMouseButtonDown(Vector3 currFramePosition)
+    void OnLeftMouseButtonDown()
     {
         if (currentMenu != null && currentMenu.activeSelf)
         {
-            PointerEventData eventData = new PointerEventData(GetComponent<EventSystem>())
-            {
-                position = Input.mousePosition
-            };
+            PointerEventData eventData = new PointerEventData(GetComponent<EventSystem>());
+            eventData.position = Input.mousePosition;
             List<RaycastResult> results = new List<RaycastResult>();
             currentMenu.GetComponent<GraphicRaycaster>().Raycast(eventData, results);
             bool found = false;
@@ -91,12 +86,14 @@ public class MouseController : MonoBehaviour
                 if (result.gameObject.name == "Image")
                 {
                     found = true;
+                    break;
                 }
             }
             if (!found)
             {
                 currentMenu.SetActive(false);
             }
+            //BuildManager.Instance.SetObjectToBuild(startTile);
 
         }
         else
@@ -106,7 +103,7 @@ public class MouseController : MonoBehaviour
                 if (currentType == 0)
                 {
                     Tile tileEnd = GetTileAtWorldCoord(currFramePosition);
-                    List<Tile> set = WorldController.Instance.GetLPathSet(tileDragStart.X, tileDragStart.Y, tileEnd.X, tileEnd.Y);
+                    List<Tile> set = WorldController.Instance.GetLPathSet(startTile.X, startTile.Y, tileEnd.X, tileEnd.Y);
                     WorldController.Instance.CreateRoad(set);
                 }
                 draging = false;
@@ -118,7 +115,7 @@ public class MouseController : MonoBehaviour
                 {
                     currentMenu = Instantiate(tileMenu, currFramePosition, Quaternion.identity);
                 }
-                tileDragStart = GetTileAtWorldCoord(currFramePosition);
+                startTile = GetTileAtWorldCoord(currFramePosition);
                 currentMenu.transform.position = currFramePosition;
                 currentMenu.SetActive(true);
                 //call dynamicMenu();
@@ -128,8 +125,34 @@ public class MouseController : MonoBehaviour
         //Todo: dynamic menu
 
     }
-    void OnLeftMouseButtonUp(Vector3 currFramePosition)
+    void OnLeftMouseButtonUp()
     {
+        if (currentMenu != null && currentMenu.activeSelf)
+        {
+            PointerEventData eventData = new PointerEventData(GetComponent<EventSystem>());
+            eventData.position = Input.mousePosition;
+            List<RaycastResult> results = new List<RaycastResult>();
+            currentMenu.GetComponent<GraphicRaycaster>().Raycast(eventData, results);
+            foreach (RaycastResult result in results)
+            {
+                switch (result.gameObject.name)
+                {
+                    case "Industrial":
+                        Debug.Log("Industrail let go");
+                        BuildManager.Instance.SetObjectToBuild(BuildManager.Instance.industry, startTile);
+                        currentMenu.SetActive(false);
+                        break;
+                    case "Entertainment":
+                        BuildManager.Instance.SetObjectToBuild(BuildManager.Instance.entertainment, startTile);
+                        currentMenu.SetActive(false);
+                        break;
+                    case "Residential":
+                        BuildManager.Instance.SetObjectToBuild(BuildManager.Instance.residental, startTile);
+                        currentMenu.SetActive(false);
+                        break;
+                }
+            }
+        }
     }
     Vector3 GetGamePlaneIntersectionPoint()
     {
@@ -144,7 +167,7 @@ public class MouseController : MonoBehaviour
             return new Vector3(0, 0, 0);
         }
     }
-    void UpdateCursor(Tile tileUnderMouse)
+    void UpdateCursor()
     {
         if (currentMenu == null || !currentMenu.activeSelf)
         {
@@ -160,17 +183,16 @@ public class MouseController : MonoBehaviour
             }
         }
     }
-    void HighlightTiles(Tile tileUnderMouse)
+    void HighlightTiles()
     {
         if (draging)
         {
             if (currentType == 0)
             {
-                if (tileDragStart != null)
+                if (startTile != null)
                 {
-                    highlightedTiles.AddRange(
-                        WorldController.Instance.GetLPathSet(tileDragStart.X, tileDragStart.Y,
-                        tileUnderMouse.X, tileUnderMouse.Y));
+                    highlightedTiles.AddRange(WorldController.Instance.GetLPathSet(
+                        startTile.X, startTile.Y, tileUnderMouse.X, tileUnderMouse.Y));
                 }
             }
         }
@@ -184,12 +206,17 @@ public class MouseController : MonoBehaviour
             {
                 //Ugly hack
                 //TODO
-                if (result.gameObject.name == "Industrial")
+                //Debug.Log(result.gameObject.name);
+                switch (result.gameObject.name)
                 {
-                    if (tileDragStart != null)
-                    {
-                        highlightedTiles.Add(tileDragStart);
-                    }
+                    case "Industrial":
+                    case "Entertainment":
+                    case "Residential":
+                        if (startTile != null)
+                        {
+                            highlightedTiles.Add(startTile);
+                        }
+                        break;
                 }
             }
         }
@@ -227,44 +254,10 @@ public class MouseController : MonoBehaviour
 
         return WorldController.Instance.world.GetTileAt(x, y);
     }
-	/*
-        if (!buildModeIsObjects)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                if (Physics.Raycast(ray, out hit))
-                    if (hit.transform != null)
-                    {
-                        Debug.Log("Hit " + hit.transform.gameObject.name + " " + hit.transform.gameObject);
-                        selectedObject = hit.transform.gameObject;
-                        delete.gameObject.SetActive(true);
-                        build.gameObject.SetActive(false);
-                        return;
-                    }
 
-                if (tileUnderMouse != null && selected != tileUnderMouse)
-                {
-                    selected = tileUnderMouse;
-                    Debug.Log(selected.X + "," + selected.Y);
-                    build.gameObject.SetActive(true);
-                    delete.gameObject.SetActive(false);
-                }
-                else if (tileUnderMouse != null && selected == tileUnderMouse)
-                {
-                    Debug.Log("Deselected " + selected.X + "," + selected.Y);
-                    selected = null;
+    
 
-                    build.gameObject.SetActive(false);
-                    delete.gameObject.SetActive(false);
-                }
-            }
-        }
-        lastFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        lastFramePosition.z = 0;
-		*/
-    }
-
-    void BuildRoad()
+    void BuildRoad(Vector3 currFramePosition)
     {
         if (buildModeIsObjects)
         {
@@ -273,7 +266,7 @@ public class MouseController : MonoBehaviour
                 Tile t = WorldController.Instance.GetTileAtWorldCoord(currFramePosition);
                 if (t != null)
                 {
-                    WorldController.Instance.World.PlaceFurniture(buildModeObjectType, t);
+                    WorldController.Instance.world.PlaceFurniture(buildModeObjectType, t);
                 }
             }
 
@@ -292,7 +285,7 @@ public class MouseController : MonoBehaviour
     {
         buildModeIsObjects = true;
         buildModeObjectType = "Road";
-        build.gameObject.SetActive(false);
-        delete.gameObject.SetActive(false);
+        //build.gameObject.SetActive(false);
+        //delete.gameObject.SetActive(false);
     }
 }

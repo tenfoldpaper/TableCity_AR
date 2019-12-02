@@ -10,10 +10,10 @@ public class WorldController : MonoBehaviour
 
     public Sprite floorSprite;
     public Sprite roadSprite;
-
-    Dictionary<Tile, GameObject> tileGameObjectMap;
+    
     Dictionary<Furniture, GameObject> furnitureGameObjectMap;
     Dictionary<string, Sprite> furnitureSprites;
+    //List<Building> buildings;
 
     // The world and tile data
     public World world { get; protected set; }
@@ -50,7 +50,6 @@ public class WorldController : MonoBehaviour
                 GameObject tile_go = new GameObject();
 
                 // Add our tile/GO pair to the dictionary.
-                tileGameObjectMap.Add(tile_data, tile_go);
 
                 tile_go.name = "Tile_" + x + "_" + y;
                 tile_go.transform.position = new Vector3(tile_data.X, tile_data.Y, 0);
@@ -68,7 +67,10 @@ public class WorldController : MonoBehaviour
         // Shake things up, for testing.
         world.RandomizeTiles();
     }
-
+    public GameObject WrapInstantiate(GameObject prefab, Vector3 position, Quaternion rotation)
+    {
+        return Instantiate(prefab, position, rotation); 
+    }
     void LoadSprites()
     {
         furnitureSprites = new Dictionary<string, Sprite>();
@@ -90,7 +92,7 @@ public class WorldController : MonoBehaviour
         int y = y_start;
         int x_sign = x_end > x_start? 1: -1;
 		int y_sign = y_end > y_start? 1: -1;
-		if (Mathf.Abs(x_s - x_e) > Mathf.Abs(y_s - y_e))
+		if (Mathf.Abs(x_start - x_end) > Mathf.Abs(y_start - y_end))
         {
             for (; x != x_end; x+= x_sign)
             {
@@ -151,7 +153,7 @@ public class WorldController : MonoBehaviour
 
         if (tile_go == null)
         {
-            Debug.LogError("tileGameObjectMap's returned GameObject is null -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
+            Debug.LogError("tileGameObject is null");
             return;
         }
 

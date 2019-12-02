@@ -108,7 +108,7 @@ public class Tile {
     }
     public bool isOccupied()
     {
-        switch (type)
+        switch (Type)
         {
             case TileType.Floor:
             case TileType.Empty:

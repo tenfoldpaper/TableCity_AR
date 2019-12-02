@@ -11,36 +11,36 @@ public class Shop : MonoBehaviour
 
     private void Start()
     {
-        buildManager = BuildManager.instance;
+        buildManager = BuildManager.Instance;
     }
 
     public void PurchaseRoad()
     {
         Debug.Log("Road purchased");
-        buildManager.SelectObjectToBuild(road);
+        //buildManager.SelectObjectToBuild(road);
     }
 
     public void SelectEntertainment()
     {
         Debug.Log("Entertainment Purchased");
-        buildManager.SelectObjectToBuild(entertainment);
+        //buildManager.SelectObjectToBuild(entertainment);
     }
 
     public void SelectResidental()
     {
         Debug.Log("Residental Purchased" + buildManager.residental);
-        buildManager.SelectObjectToBuild(residental);
+        //buildManager.SelectObjectToBuild(residental);
     }
 
     public void SelectIndustry()
     {
         Debug.Log("Industry Purchased");
-        buildManager.SelectObjectToBuild(industry);
+        //buildManager.SelectObjectToBuild(industry);
     }
 
     public void SoldObject()
     {
         Debug.Log("Object deleted");
-        buildManager.delete();
+        //buildManager.delete();
     }
 }
