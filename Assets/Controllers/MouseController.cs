@@ -6,7 +6,6 @@ using UnityEngine.EventSystems;
 
 public class MouseController : MonoBehaviour
 {
-
     public static MouseController Instance { get; protected set; }
     public GameObject circleCursor;
     public Collider gamePlane;
@@ -14,7 +13,7 @@ public class MouseController : MonoBehaviour
     GameObject currentMenu;
     Vector3 dragStartPosition;
     Vector3 lastFramePosition;
-    
+
     public bool draging;
     public int currentType = -1;
     List<Tile> transparentTiles = new List<Tile>();
@@ -40,7 +39,7 @@ public class MouseController : MonoBehaviour
         selected = null;
         buildModeIsObjects = false;
     }
-    
+
     // Update is called once per frame
     void Update()
     {
@@ -51,7 +50,7 @@ public class MouseController : MonoBehaviour
         foreach (Tile t in highlightedTiles)
         {
             t.highlighted = false;
-		}
+        }
 
         //BuildRoad(currFramePosition);
         highlightedTiles.Clear();
@@ -104,6 +103,7 @@ public class MouseController : MonoBehaviour
                 {
                     Tile tileEnd = GetTileAtWorldCoord(currFramePosition);
                     List<Tile> set = WorldController.Instance.GetLPathSet(startTile.X, startTile.Y, tileEnd.X, tileEnd.Y);
+
                     WorldController.Instance.CreateRoad(set);
                 }
                 draging = false;
@@ -253,39 +253,5 @@ public class MouseController : MonoBehaviour
         int y = (int)coord.y;
 
         return WorldController.Instance.world.GetTileAt(x, y);
-    }
-
-    
-
-    void BuildRoad(Vector3 currFramePosition)
-    {
-        if (buildModeIsObjects)
-        {
-            if (Input.GetMouseButton(0))
-            {
-                Tile t = WorldController.Instance.GetTileAtWorldCoord(currFramePosition);
-                if (t != null)
-                {
-                    WorldController.Instance.world.PlaceFurniture(buildModeObjectType, t);
-                }
-            }
-
-            if (Input.GetMouseButtonUp(0))
-            {
-                buildModeIsObjects = false;
-            }
-        }
-        else
-        {
-            //When selecting objects
-        }
-    }
-
-    public void SetMode_BuildRoad()
-    {
-        buildModeIsObjects = true;
-        buildModeObjectType = "Road";
-        //build.gameObject.SetActive(false);
-        //delete.gameObject.SetActive(false);
     }
 }

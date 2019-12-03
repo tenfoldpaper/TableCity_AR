@@ -5,7 +5,8 @@ using UnityEngine;
 
 public enum TileType { Empty, Floor };
 
-public class Tile {
+public class Tile
+{
 
     public enum TileType { Empty, Floor, Road };
     //Action<int, string, float> someFunction;
@@ -25,8 +26,11 @@ public class Tile {
             highlightedValue = value;
             if (old != highlightedValue)
             {
+
                 if (!old)
+
                     gameObject.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 1f, 1f);
+
                 else
                     gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
             }
@@ -65,7 +69,7 @@ public class Tile {
             transparentValue = value;
             if (old != transparentValue)
             {
-                if(!old)
+                if (!old)
                     gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, .5f);
                 else
                     gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
@@ -90,7 +94,8 @@ public class Tile {
     }
     LooseObject looseObject;
     InstalledObject installedObject;
-    public Furniture furniture
+
+    public Object objects
     {
         get; protected set;
     }
@@ -118,8 +123,6 @@ public class Tile {
         }
     }
 
-
-
     public void RegisterTileTypeChangedCallback(Action<Tile> callback)
     {
         cbTileTypeChanged += callback;
@@ -133,28 +136,22 @@ public class Tile {
         cbTileTypeChanged -= callback;
     }
 
-    public bool PlaceFurniture(Furniture objInstance)
+    public bool PlaceObject(Object objInstance)
     {
         if (objInstance == null)
         {
             // We are uninstalling whatever was here before.
-            furniture = null;
+            objects = null;
             return true;
         }
 
-        // objInstance isn't null
-
-        if (furniture != null)
+        if (objects != null)
         {
-            //Debug.LogError("Trying to assign a furniture to a tile that already has one!");
+            Debug.Log("Trying to assign a object to a tile that already has one!");
             return false;
         }
 
-        // At this point, everything's fine!
-
-        furniture = objInstance;
+        objects = objInstance;
         return true;
     }
-
-
 }

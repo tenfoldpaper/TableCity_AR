@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class World {
+public class World
+{
 
     Tile[,] tiles;
 
-    Dictionary<string, Furniture> furniturePrototypes;
+    //Dictionary<string, Furniture> furniturePrototypes;
+    Dictionary<string, Object> objectPrototypes;
 
     // The tile width of the world.
     public int Width { get; protected set; }
@@ -15,7 +17,7 @@ public class World {
     // The tile height of the world
     public int Height { get; protected set; }
 
-    Action<Furniture> cbFurnitureCreated;
+    Action<Object> cbObjectCreated;
 
     public World(int width = 100, int height = 100)
     {
@@ -34,30 +36,31 @@ public class World {
 
         Debug.Log("World created with " + (Width * Height) + " tiles.");
 
-        CreateFurniturePrototypes();
+        CreateObjectPrototypes();
     }
 
-    void CreateFurniturePrototypes()
+    void CreateObjectPrototypes()
     {
-        furniturePrototypes = new Dictionary<string, Furniture>();
+        objectPrototypes = new Dictionary<string, Object>();
 
-        furniturePrototypes.Add("Wall",
-            Furniture.CreatePrototype(
-                                "Wall",
+        objectPrototypes.Add("Building",
+            Object.CreatePrototype(
+                                "Building",
                                 1,  // Width
                                 1,  // Height
-                                true // Links to neighbours and "sort of" becomes part of a large object
+                                false // Links to neighbours and "sort of" becomes part of a large object
                             )
         );
 
-        furniturePrototypes.Add("Road",
-            Furniture.CreatePrototype(
+        objectPrototypes.Add("Road",
+            Object.CreatePrototype(
                                 "Road",
                                 1,  // Width
                                 1,  // Height
                                 true // Links to neighbours and "sort of" becomes part of a large object
                             )
         );
+
     }
 
     public void RandomizeTiles()
@@ -67,6 +70,7 @@ public class World {
             for (int y = 0; y < Height; y++)
             {
                 tiles[x, y].Type = Tile.TileType.Floor;
+                tiles[x, y].gameObject.GetComponent<SpriteRenderer>().sortingOrder = -1;
             }
         }
     }
@@ -93,10 +97,9 @@ public class World {
         return tiles[x, y];
     }
 
-    public void PlaceFurniture(string objectType, Tile t)
+    public void PlaceObject(string objectType, Tile t)
     {
-
-        Furniture obj = Furniture.PlaceInstance(furniturePrototypes[objectType], t);
+        Object obj = Object.PlaceInstance(objectPrototypes[objectType], t);
 
         if (obj == null)
         {
@@ -104,12 +107,11 @@ public class World {
             return;
         }
 
-        if (cbFurnitureCreated != null)
+        if (cbObjectCreated != null)
         {
-            cbFurnitureCreated(obj);
+            cbObjectCreated(obj);
         }
     }
-    //This might allow loading to take place dynamically, but probably just instantiating all of it right away is better
 
     public int GetHeight()
     {
@@ -121,13 +123,13 @@ public class World {
         return Width;
     }
 
-    public void RegisterFurnitureCreated(Action<Furniture> callbackfunc)
+    public void RegisterObjectCreated(Action<Object> callbackfunc)
     {
-        cbFurnitureCreated += callbackfunc;
+        cbObjectCreated += callbackfunc;
     }
 
-    public void UnregisterFurnitureCreated(Action<Furniture> callbackfunc)
+    public void UnregisterObjectCreated(Action<Object> callbackfunc)
     {
-        cbFurnitureCreated -= callbackfunc;
+        cbObjectCreated -= callbackfunc;
     }
 }
