@@ -24,6 +24,8 @@ public class ButtonScript : MonoBehaviour
     }
     public void OnClick(int type)
     {
+        Debug.Log("ButtonScript called");
+
         ButtonType buttonType = (ButtonType)type;
         switch (buttonType)
         {

@@ -38,13 +38,18 @@ public class MouseController : MonoBehaviour
         Instance = this;
         selected = null;
         buildModeIsObjects = false;
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
         currFramePosition = GetGamePlaneIntersectionPoint();
+    
+
         tileUnderMouse = GetTileAtWorldCoord(currFramePosition);
+
         UpdateCursor();
 
         foreach (Tile t in highlightedTiles)
@@ -59,6 +64,9 @@ public class MouseController : MonoBehaviour
         {
             t.highlighted = true;
         }
+        //if (tileUnderMouse.objects != null)
+       //    Debug.Log("Tile already has object");
+
         if (Input.GetMouseButtonDown(0))
         {
             OnLeftMouseButtonDown();
@@ -138,7 +146,7 @@ public class MouseController : MonoBehaviour
                 switch (result.gameObject.name)
                 {
                     case "Industrial":
-                        Debug.Log("Industrail let go");
+                        //Debug.Log("Industrail let go");
                         BuildManager.Instance.SetObjectToBuild(BuildManager.Instance.industry, startTile);
                         currentMenu.SetActive(false);
                         break;
@@ -158,7 +166,8 @@ public class MouseController : MonoBehaviour
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
-        if (gamePlane.Raycast(ray, out hit, 1000.0f))
+
+            if (gamePlane.Raycast(ray, out hit, 1000.0f))
         {
             return hit.point;
         }

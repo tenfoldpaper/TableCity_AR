@@ -36,6 +36,9 @@ public class BuildManager
             residental = new Blueprint();
             residental.cost = 0;
             residental.prefab = b1;
+
+            UpdateResources();
+
         }
         if (industry == null)
         {
@@ -43,8 +46,14 @@ public class BuildManager
             industry = new Blueprint();
             industry.cost = 0;
             industry.prefab = c1;
+
+
+
         }
     }
+
+
+
     public void SetObjectToBuild(Blueprint objectToBuild, Tile parentTile)
     {
         if (PlayerStats.Money < objectToBuild.cost)
@@ -68,9 +77,22 @@ public class BuildManager
         WorldController.Instance.world.PlaceObject("Building", parentTile);
 
         GameObject go = (GameObject)WorldController.Instance.WrapInstantiate(objectToBuild.prefab, position, Quaternion.Euler(180, 0, 0));
+        //go.GetComponent<BuildingScript>().t = parentTile;
 
-        Debug.Log("Object build! Money left: " + PlayerStats.Money);
+        UpdateResources();
+
+
+        //Debug.Log("Object build! Money left: " + PlayerStats.Money);
         objectToBuild = null;
+    }
+
+    void UpdateResources()
+    {
+        GameObject[] resources = GameObject.FindGameObjectsWithTag("resource");
+        foreach (GameObject resource in resources)
+        {
+            resource.gameObject.GetComponent<ElectricityScript>().UpdateElectricity();
+        }
     }
     /* Build on Gameobject
     public void BuildObjectOn(Tile t)

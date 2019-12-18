@@ -11,9 +11,10 @@ GameObject:
   - component: {fileID: 2939464126884833525}
   - component: {fileID: 6165451751604769475}
   - component: {fileID: 480931715825380922}
+  - component: {fileID: -7214330313058551702}
   m_Layer: 0
   m_Name: b1
-  m_TagString: Untagged
+  m_TagString: building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -80,3 +81,17 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &-7214330313058551702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2202342493376191206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d66e1b3d9035742fe83ad6500b416f95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maximumCapacity: 10
+  electricity: 0
