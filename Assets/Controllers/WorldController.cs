@@ -193,8 +193,13 @@ public class WorldController : MonoBehaviour
         {
             obj_go.AddComponent<SpriteRenderer>().sprite = GetSpriteForObject(obj);
 
+
+
             // Register our callback so that our GameObject gets updated whenever
             // the object's into changes.
+
+            // Debug.Log(GetSpriteForObject(obj));
+
             obj.RegisterOnChangedCallback(OnObjectChanged);
         }
     }

@@ -37,16 +37,16 @@ TextureImporter:
     second: Road_W
   - first:
       213: 8480926240023100230
-    second: Road_ES
+    second: delete
   - first:
       213: -3401310560344723591
-    second: Road_NE
+    second: delete2
   - first:
       213: 2191796854329808291
-    second: Road_NES
+    second: delete3
   - first:
       213: -495336107823684672
-    second: Road_NEW
+    second: delete4
   - first:
       213: -7993123680705331308
     second: Road_NS
@@ -263,7 +263,7 @@ TextureImporter:
       name: Road_SW
       rect:
         serializedVersion: 2
-        x: 646
+        x: 643
         y: 256
         width: 140
         height: 140
@@ -365,11 +365,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Road_ES
+      name: delete
       rect:
         serializedVersion: 2
-        x: 358
-        y: 464
+        x: 156
+        y: 17
         width: 140
         height: 140
       alignment: 6
@@ -386,11 +386,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Road_NE
+      name: delete2
       rect:
         serializedVersion: 2
-        x: 356
-        y: 464
+        x: 81
+        y: 38
         width: 140
         height: 140
       alignment: 6
@@ -407,11 +407,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Road_NES
+      name: delete3
       rect:
         serializedVersion: 2
-        x: 356
-        y: 462
+        x: 65
+        y: 36
         width: 140
         height: 140
       alignment: 6
@@ -428,11 +428,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Road_NEW
+      name: delete4
       rect:
         serializedVersion: 2
-        x: 356
-        y: 464
+        x: 109
+        y: 23
         width: 140
         height: 140
       alignment: 6
