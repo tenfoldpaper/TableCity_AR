@@ -24,7 +24,7 @@ public class ButtonScript : MonoBehaviour
     }
     public void OnClick(int type)
     {
-        Debug.Log("ButtonScript called");
+        //Debug.Log("ButtonScript called");
 
         ButtonType buttonType = (ButtonType)type;
         switch (buttonType)
@@ -54,17 +54,17 @@ public class ButtonScript : MonoBehaviour
                 this.transform.root.gameObject.SetActive(false);
                 break;
             case ButtonType.Electricity:
-                MouseController.Instance.draging = true;
-                MouseController.Instance.currentType = 1;
-                this.transform.root.gameObject.SetActive(false);
+                //MouseController.Instance.draging = true;
+                //MouseController.Instance.currentType = 1;
+                //this.transform.root.gameObject.SetActive(false);
                 break;
             case ButtonType.Water:
-                MouseController.Instance.draging = true;
-                MouseController.Instance.currentType = 2;
-                this.transform.root.gameObject.SetActive(false);
+                //MouseController.Instance.draging = true;
+                //MouseController.Instance.currentType = 2;
+                //this.transform.root.gameObject.SetActive(false);
                 break;
 
         }
-        Debug.Log("Clicked" + type);
+        //Debug.Log("Clicked" + type);
     }
 }

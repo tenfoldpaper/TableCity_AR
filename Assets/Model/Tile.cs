@@ -19,8 +19,8 @@ public class Tile {
 
     public GameObject gameObject;
     
-    public bool electricity;
-    public bool water;
+    public bool electricity { get; set; }
+    public bool water { get; set; }
     public int level;
     public int happiness { get; set; }
 

@@ -161,7 +161,7 @@ public class WorldController : MonoBehaviour
             {
                 WorldController.Instance.world.PlaceFurniture("Road", t);
                 t.Type = Tile.TileType.Road;
-                Debug.Log("Road created at " + t.X + " " + t.Y);
+                //Debug.Log("Road created at " + t.X + " " + t.Y);
                 playerstats.Money -= 10;
             }
             else
@@ -331,23 +331,28 @@ public class WorldController : MonoBehaviour
                 int currentY = epicentre.Y + j;
 
                 // Don't accidentally get tiles that are out of range!
-                if(currentX > worldX)
+                if(currentX > worldX - 1)
                 {
+                    break;
                     currentX = worldX;
                 }
-                if(currentY > worldY)
+                if(currentY > worldY - 1)
                 {
+                    break;
                     currentY = worldY;
                 }
                 if(currentX < 0)
                 {
+                    break;
                     currentX = 0;
                 }
                 if(currentY < 0)
                 {
+                    break;
                     currentY = 0;
                 }
 
+                Debug.Log(currentX.ToString() + " " + currentY.ToString());
                 Tile currentTile = world.GetTileAt(currentX, currentY);
                 if (resourceType)
                 {
@@ -406,12 +411,12 @@ public class WorldController : MonoBehaviour
             {
                 int currentX = epicentre.X + i;
                 int currentY = epicentre.Y + j;
-                if (currentX > worldX)
+                if (currentX > worldX - 1)
                 {
                     break;
                     currentX = worldX;
                 }
-                if (currentY > worldY)
+                if (currentY > worldY - 1)
                 {
                     break;
                     currentY = worldY;
@@ -451,7 +456,6 @@ public class WorldController : MonoBehaviour
 
     public int ManhattanDistance(Tile a, Tile b)
     {
-        Debug.Log(System.Math.Abs(b.X - a.X) + System.Math.Abs(b.Y - a.Y));
         return System.Math.Abs(b.X - a.X) + System.Math.Abs(b.Y - a.Y);
     }
 
