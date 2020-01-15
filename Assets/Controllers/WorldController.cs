@@ -3,24 +3,38 @@ using System.Linq;
 using UnityEngine;
 using System.Collections.Generic;
 
+
 public class WorldController : MonoBehaviour
 {
+
     public static WorldController Instance { get; protected set; }
 
     public Sprite floorSprite;
     public Sprite roadSprite;
+    public Sprite residentialSprite;
+    public Sprite industrialSprite;
+    public Sprite entertainmentSprite;
+    public Sprite waterSprite;
+    public Sprite electricitySprite;
 
-    //Dictionary<Furniture, GameObject> furnitureGameObjectMap;
-    Dictionary<Object, GameObject> objectGameObjectMap;
-    Dictionary<string, Sprite> objectSprites;
+
+    Dictionary<Furniture, GameObject> furnitureGameObjectMap;
+    Dictionary<string, Sprite> furnitureSprites;
     //List<Building> buildings;
+    
 
     // The world and tile data
     public World world { get; protected set; }
+    public int worldX = 20;
+    public int worldY = 20;
+    private int MaxHappiness = 20;
+    public float CurrentHappinessRatio { get; protected set; }
+    public PlayerStats playerstats { get; protected set; }
 
     // Use this for initialization
     void Start()
     {
+
         LoadSprites();
 
         if (Instance != null)
@@ -30,13 +44,14 @@ public class WorldController : MonoBehaviour
         Instance = this;
 
         // Create a world with Empty tiles
-        world = new World();
+        world = new World(worldX, worldY);
+        playerstats = new PlayerStats();
+        Vector3 bc_center = new Vector3(0.5f, 0.5f, 0);
 
-        world.RegisterObjectCreated(OnObjectCreated);
+        world.RegisterFurnitureCreated(OnFurnitureCreated);
 
         // Instantiate our dictionary that tracks which GameObject is rendering which Tile data.
-        //furnitureGameObjectMap = new Dictionary<Furniture, GameObject>();
-        objectGameObjectMap = new Dictionary<Object, GameObject>();
+        furnitureGameObjectMap = new Dictionary<Furniture, GameObject>();
 
         // Create a GameObject for each of our tiles, so they show visually. (and redunt reduntantly)
         for (int x = 0; x < world.Width; x++)
@@ -56,6 +71,10 @@ public class WorldController : MonoBehaviour
                 tile_go.transform.SetParent(this.transform, false);
                 // Add a sprite renderer, but don't set a sprite since they are all empty
                 SpriteRenderer tile_sr = tile_go.AddComponent<SpriteRenderer>();
+                BoxCollider tile_bc = tile_go.AddComponent<BoxCollider>();
+                tile_bc.center = bc_center;
+                tile_bc.size = new Vector3(1, 1, 0.01f);
+                tile_go.layer = 8;
                 tile_data.gameObject = tile_go;
 
                 // Register our callback so that our GameObject gets updated whenever
@@ -69,19 +88,21 @@ public class WorldController : MonoBehaviour
     }
     public GameObject WrapInstantiate(GameObject prefab, Vector3 position, Quaternion rotation)
     {
-        return Instantiate(prefab, position, rotation);
+        return Instantiate(prefab, position, rotation); 
     }
     void LoadSprites()
     {
-        objectSprites = new Dictionary<string, Sprite>();
+        furnitureSprites = new Dictionary<string, Sprite>();
         Sprite[] sprites = Resources.LoadAll<Sprite>("Images/Furniture");
 
-        Debug.Log("LOADED RESOURCE:");
+        
+        //Debug.Log("LOADED RESOURCE:");
         foreach (Sprite s in sprites)
         {
-            Debug.Log(s);
-            objectSprites[s.name] = s;
+            //Debug.Log(s);
+            furnitureSprites[s.name] = s;
         }
+        
     }
     //Creates an L set inbetween start and endpoint
     //TODO apply a function to each tile instead
@@ -90,11 +111,11 @@ public class WorldController : MonoBehaviour
         List<Tile> set = new List<Tile>();
         int x = x_start;
         int y = y_start;
-        int x_sign = x_end > x_start ? 1 : -1;
-        int y_sign = y_end > y_start ? 1 : -1;
-        if (Mathf.Abs(x_start - x_end) > Mathf.Abs(y_start - y_end))
+        int x_sign = x_end > x_start? 1: -1;
+		int y_sign = y_end > y_start? 1: -1;
+		if (Mathf.Abs(x_start - x_end) > Mathf.Abs(y_start - y_end))
         {
-            for (; x != x_end; x += x_sign)
+            for (; x != x_end; x+= x_sign)
             {
                 Tile t = WorldController.Instance.world.GetTileAt(x, y);
                 if (t != null)
@@ -102,7 +123,7 @@ public class WorldController : MonoBehaviour
                     set.Add(t);
                 }
             }
-            for (; y != y_end; y += y_sign)
+            for (; y != y_end; y+= y_sign)
             {
                 Tile t = WorldController.Instance.world.GetTileAt(x, y);
                 if (t != null)
@@ -113,7 +134,7 @@ public class WorldController : MonoBehaviour
         }
         else
         {
-            for (; y != y_end; y += y_sign)
+            for (; y != y_end; y+= y_sign)
             {
                 Tile t = WorldController.Instance.world.GetTileAt(x, y);
                 if (t != null)
@@ -121,7 +142,7 @@ public class WorldController : MonoBehaviour
                     set.Add(t);
                 }
             }
-            for (; x != x_end; x += x_sign)
+            for (; x != x_end; x+= x_sign)
             {
                 Tile t = WorldController.Instance.world.GetTileAt(x, y);
                 if (t != null)
@@ -134,28 +155,41 @@ public class WorldController : MonoBehaviour
     }
     public void CreateRoad(List<Tile> set)
     {
-        foreach (Tile t in set)
-        {
+        foreach(Tile t in set) {
             //t.Type = Tile.TileType.Road;
-            WorldController.Instance.world.PlaceObject("Road", t);
+            if(playerstats.Money >= 10)
+            {
+                WorldController.Instance.world.PlaceFurniture("Road", t);
+                t.Type = Tile.TileType.Road;
+                Debug.Log("Road created at " + t.X + " " + t.Y);
+                playerstats.Money -= 10;
+            }
+            else
+            {
+                Debug.Log("Not enough money!");
+                return;
+            }
         }
     }
 
     // Update is called once per frame
     void Update()
     {
+
     }
 
     // This function should be called automatically whenever a tile's type gets changed.
     void OnTileTypeChanged(Tile tile_data)
     {
-        GameObject tile_go = tile_data.gameObject;
+
+		GameObject tile_go = tile_data.gameObject;
 
         if (tile_go == null)
         {
             Debug.LogError("tileGameObject is null");
             return;
         }
+
         if (tile_data.Type == Tile.TileType.Floor)
         {
             tile_go.GetComponent<SpriteRenderer>().sprite = floorSprite;
@@ -164,9 +198,13 @@ public class WorldController : MonoBehaviour
         {
             tile_go.GetComponent<SpriteRenderer>().sprite = null;
         }
+        else if (tile_data.Type == Tile.TileType.Road)
+        {
+            tile_go.GetComponent<SpriteRenderer>().sprite = roadSprite;
+        }
         else
         {
-            Debug.LogError("OnTileTypeChanged - Unrecognized tile type.");
+            tile_go.GetComponent<SpriteRenderer>().sprite = floorSprite;
         }
     }
 
@@ -178,52 +216,60 @@ public class WorldController : MonoBehaviour
         return world.GetTileAt(x, y);
     }
 
-    public void OnObjectCreated(Object obj)
+    public void OnFurnitureCreated(Furniture furn)
     {
-        GameObject obj_go = new GameObject();
+     
+
+        GameObject furn_go = new GameObject();
+        //furn_go.AddComponent<SpriteRenderer>().sortingOrder = 1;
+        
 
         // Add our tile/GO pair to the dictionary.
-        objectGameObjectMap.Add(obj, obj_go);
+        furnitureGameObjectMap.Add(furn, furn_go);
 
-        obj_go.name = obj.objectType + "_" + obj.tile.X + "_" + obj.tile.Y;
-        obj_go.transform.position = new Vector3(obj.tile.X, obj.tile.Y, 0);
-        obj_go.transform.SetParent(this.transform, true);
-
-        if (obj.objectType == "Road")
-        {
-            obj_go.AddComponent<SpriteRenderer>().sprite = GetSpriteForObject(obj);
-
-
+        furn_go.name = furn.objectType + "_" + furn.tile.X + "_" + furn.tile.Y;
+        furn_go.transform.position = new Vector3(furn.tile.X, 0.01f, -furn.tile.Y);
+        furn_go.transform.rotation = Quaternion.Euler(270, 0, 0);
+        furn_go.transform.SetParent(this.transform, true);
+        
+        if(furn.objectType == "Road") { 
+            furn_go.AddComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
 
             // Register our callback so that our GameObject gets updated whenever
             // the object's into changes.
-
-            // Debug.Log(GetSpriteForObject(obj));
-
-            obj.RegisterOnChangedCallback(OnObjectChanged);
+            furn.RegisterOnChangedCallback(OnFurnitureChanged);
         }
     }
 
-    void OnObjectChanged(Object obj)
+    void OnFurnitureChanged(Furniture furn)
     {
-        // Make sure the road's graphics are correct.
+        //Debug.Log("OnFurnitureChanged");
+        // Make sure the furniture's graphics are correct.
 
-        if (objectGameObjectMap.ContainsKey(obj) == false)
+        if (furnitureGameObjectMap.ContainsKey(furn) == false)
         {
-            Debug.LogError("OnObjectChanged -- trying to change visuals for object not in our map.");
+            Debug.LogError("OnFurnitureChanged -- trying to change visuals for furniture not in our map.");
             return;
         }
-        GameObject obj_go = objectGameObjectMap[obj];
 
-        obj_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForObject(obj);
+        GameObject furn_go = furnitureGameObjectMap[furn];
+        //Debug.Log(furn_go);
+        //Debug.Log(furn_go.GetComponent<SpriteRenderer>());
+
+        furn_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
     }
 
-    Sprite GetSpriteForObject(Object obj)
+
+
+
+    Sprite GetSpriteForFurniture(Furniture obj)
     {
         if (obj.linksToNeighbour == false)
         {
-            return objectSprites[obj.objectType];
+            Debug.Log(obj.objectType);
+            return furnitureSprites[obj.objectType];
         }
+
         // Otherwise, the sprite name is more complicated.
 
         string spriteName = obj.objectType + "_";
@@ -236,31 +282,212 @@ public class WorldController : MonoBehaviour
         Tile t;
 
         t = world.GetTileAt(x, y + 1);
-        if (t != null && t.objects != null && t.objects.objectType == obj.objectType)
+        if (t != null && t.furniture != null && t.furniture.objectType == obj.objectType)
         {
             spriteName += "N";
         }
         t = world.GetTileAt(x + 1, y);
-        if (t != null && t.objects != null && t.objects.objectType == obj.objectType)
+        if (t != null && t.furniture != null && t.furniture.objectType == obj.objectType)
         {
             spriteName += "E";
         }
         t = world.GetTileAt(x, y - 1);
-        if (t != null && t.objects != null && t.objects.objectType == obj.objectType)
+        if (t != null && t.furniture != null && t.furniture.objectType == obj.objectType)
         {
             spriteName += "S";
         }
         t = world.GetTileAt(x - 1, y);
-        if (t != null && t.objects != null && t.objects.objectType == obj.objectType)
+        if (t != null && t.furniture != null && t.furniture.objectType == obj.objectType)
         {
             spriteName += "W";
         }
 
-        if (objectSprites.ContainsKey(spriteName) == false)
+        // For example, if this object has all four neighbours of
+        // the same type, then the string will look like:
+        //       Wall_NESW
+
+        if (furnitureSprites.ContainsKey(spriteName) == false)
         {
             Debug.LogError("GetSpriteForInstalledObject -- No sprites with name: " + spriteName);
             return null;
         }
-        return objectSprites[spriteName];
+
+        return furnitureSprites[spriteName];
+
     }
+
+    public void UpdateTileResources(Tile epicentre, bool resourceType, bool resourceBool)
+    {
+        // From the epicentre, turn on the boolean value of the respective resource of all tiles within
+        // 5 Manhattan distance radius.
+
+        // resourceType: 0 = water, 1 = electricity
+
+        for(int i = -5; i < 6; i++) // X axis
+        {
+            for(int j = -5; j < 6; j++) // Y axis
+            {
+                int currentX = epicentre.X + i;
+                int currentY = epicentre.Y + j;
+
+                // Don't accidentally get tiles that are out of range!
+                if(currentX > worldX)
+                {
+                    currentX = worldX;
+                }
+                if(currentY > worldY)
+                {
+                    currentY = worldY;
+                }
+                if(currentX < 0)
+                {
+                    currentX = 0;
+                }
+                if(currentY < 0)
+                {
+                    currentY = 0;
+                }
+
+                Tile currentTile = world.GetTileAt(currentX, currentY);
+                if (resourceType)
+                {
+                    currentTile.electricity = resourceBool;
+                    currentTile.happiness += 5;
+                }
+                else
+                {
+                    currentTile.water = resourceBool;
+                    currentTile.happiness += 5;
+                }
+            }
+        }
+
+        CalculateTotalHappinessRatio();
+
+        Debug.Log("Tile resource has been updated.");
+    }
+
+
+    public void UpdateTileHappiness(Tile epicentre, int happinessSign)
+    {
+        // Depending on the building constructed, the happiness of individual tiles are changed.
+        // Residential tiles are the only ones that are affected, however.
+        // happinessSign is for controlling whether this function is used when constructing or 
+        // demolishing a building.
+
+        Tile.TileType happinessType = epicentre.Type;
+        int[] happinessArrayP = new int[] { 0, 10, 8, 6, 4 };
+        int[] happinessArrayE = new int[] { 0, 15, 12, 12, 10, 10, 10, 8, 8, 6, 6 };
+        int[] happinessArrayI = new int[] { 0, 10, 10, 10, 10, 8, 8, 8, 8, 6, 6 };
+
+        int affectedX = 0;
+        int affectedY = 0;
+
+        if(happinessType == Tile.TileType.Residential) // If a residential building is built, then it doesn't affect surrounding happiness.
+        {
+            CalculateTotalHappinessRatio();
+            return;
+        }
+        if(happinessType == Tile.TileType.Electricity)
+        {
+            affectedX = 2;
+            affectedY = 2;
+
+        }
+        else if(happinessType == Tile.TileType.Entertainment || happinessType == Tile.TileType.Industrial)
+        {
+            affectedX = 5;
+            affectedY = 5;
+        }
+
+        for(int i = -affectedX; i < affectedX+1; i++)
+        {
+            for(int j = -affectedY; j < affectedY+1; j++)
+            {
+                int currentX = epicentre.X + i;
+                int currentY = epicentre.Y + j;
+                if (currentX > worldX)
+                {
+                    break;
+                    currentX = worldX;
+                }
+                if (currentY > worldY)
+                {
+                    break;
+                    currentY = worldY;
+                }
+                if (currentX < 0)
+                {
+                    break;
+                    currentX = 0;
+                }
+                if (currentY < 0)
+                {
+                    break;
+                    currentY = 0;
+                }
+                Tile currentTile = world.GetTileAt(currentX, currentY);
+                
+                if (happinessType == Tile.TileType.Electricity)
+                {
+                    currentTile.happiness -= happinessSign * happinessArrayP[ManhattanDistance(currentTile, epicentre)];
+                }
+                else if (happinessType == Tile.TileType.Entertainment)
+                {
+                    currentTile.happiness += happinessSign * happinessArrayE[ManhattanDistance(currentTile, epicentre)];
+                }
+                else if (happinessType == Tile.TileType.Industrial)
+                {
+                    currentTile.happiness += happinessSign * happinessArrayI[ManhattanDistance(currentTile, epicentre)];
+                }
+            }
+        }
+
+        CalculateTotalHappinessRatio();
+
+        Debug.Log("Tile happiness has been updated.");
+
+    }
+
+    public int ManhattanDistance(Tile a, Tile b)
+    {
+        Debug.Log(System.Math.Abs(b.X - a.X) + System.Math.Abs(b.Y - a.Y));
+        return System.Math.Abs(b.X - a.X) + System.Math.Abs(b.Y - a.Y);
+    }
+
+    public void CalculateTotalHappinessRatio()
+    {
+        int totalHappiness = 0;
+        int residentialCount = 0;
+        for(int i = 0; i < worldX; i++)
+        {
+            for(int j = 0; j < worldY; j++)
+            {
+                Tile currentTile = world.GetTileAt(i, j);
+                if(currentTile.Type == Tile.TileType.Residential)
+                {
+                    int currentHappiness = currentTile.happiness;
+                    if(currentHappiness > MaxHappiness)
+                    {
+                        currentHappiness = MaxHappiness;
+                    }
+
+                    totalHappiness += currentHappiness;
+                    residentialCount += 1;
+                }
+            }
+        }
+        if(residentialCount == 0)
+        {
+            CurrentHappinessRatio = 0;
+        }
+        else
+        {
+            CurrentHappinessRatio = (float)(totalHappiness / (residentialCount * 20));
+        }
+        Debug.Log("Current HRatio: " + CurrentHappinessRatio.ToString());
+    }
+
+
 }
+

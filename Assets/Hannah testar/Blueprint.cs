@@ -7,9 +7,4 @@ public class Blueprint
 {
     public GameObject prefab;
     public int cost;
-
-    void update()
-    {
-
-    }
 }

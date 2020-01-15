@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Valve.VR;
 
 public class MouseController : MonoBehaviour
 {
+
     public static MouseController Instance { get; protected set; }
     public GameObject circleCursor;
     public Collider gamePlane;
@@ -13,7 +15,7 @@ public class MouseController : MonoBehaviour
     GameObject currentMenu;
     Vector3 dragStartPosition;
     Vector3 lastFramePosition;
-
+    
     public bool draging;
     public int currentType = -1;
     List<Tile> transparentTiles = new List<Tile>();
@@ -38,24 +40,26 @@ public class MouseController : MonoBehaviour
         Instance = this;
         selected = null;
         buildModeIsObjects = false;
-
-
     }
-
+    
     // Update is called once per frame
     void Update()
     {
         currFramePosition = GetGamePlaneIntersectionPoint();
-    
-
-        tileUnderMouse = GetTileAtWorldCoord(currFramePosition);
-
+        try
+        {
+            tileUnderMouse = GetTileAtWorldCoord(currFramePosition);
+        }
+        catch
+        {
+            Debug.Log("Null received");
+        }
         UpdateCursor();
 
         foreach (Tile t in highlightedTiles)
         {
             t.highlighted = false;
-        }
+		}
 
         //BuildRoad(currFramePosition);
         highlightedTiles.Clear();
@@ -64,9 +68,6 @@ public class MouseController : MonoBehaviour
         {
             t.highlighted = true;
         }
-        //if (tileUnderMouse.objects != null)
-       //    Debug.Log("Tile already has object");
-
         if (Input.GetMouseButtonDown(0))
         {
             OnLeftMouseButtonDown();
@@ -111,7 +112,6 @@ public class MouseController : MonoBehaviour
                 {
                     Tile tileEnd = GetTileAtWorldCoord(currFramePosition);
                     List<Tile> set = WorldController.Instance.GetLPathSet(startTile.X, startTile.Y, tileEnd.X, tileEnd.Y);
-
                     WorldController.Instance.CreateRoad(set);
                 }
                 draging = false;
@@ -145,8 +145,8 @@ public class MouseController : MonoBehaviour
             {
                 switch (result.gameObject.name)
                 {
+                    
                     case "Industrial":
-                        //Debug.Log("Industrail let go");
                         BuildManager.Instance.SetObjectToBuild(BuildManager.Instance.industry, startTile);
                         currentMenu.SetActive(false);
                         break;
@@ -158,6 +158,14 @@ public class MouseController : MonoBehaviour
                         BuildManager.Instance.SetObjectToBuild(BuildManager.Instance.residental, startTile);
                         currentMenu.SetActive(false);
                         break;
+                    case "Water":
+                        BuildManager.Instance.SetObjectToBuild(BuildManager.Instance.watertower, startTile);
+                        currentMenu.SetActive(false);
+                        break;
+                    case "Electricity":
+                        BuildManager.Instance.SetObjectToBuild(BuildManager.Instance.powerplant, startTile);
+                        currentMenu.SetActive(false);
+                        break;
                 }
             }
         }
@@ -166,8 +174,7 @@ public class MouseController : MonoBehaviour
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
-
-            if (gamePlane.Raycast(ray, out hit, 1000.0f))
+        if (gamePlane.Raycast(ray, out hit, 1000.0f))
         {
             return hit.point;
         }
@@ -262,5 +269,40 @@ public class MouseController : MonoBehaviour
         int y = (int)coord.y;
 
         return WorldController.Instance.world.GetTileAt(x, y);
+    }
+
+    
+
+    void BuildRoad(Vector3 currFramePosition)
+    {
+        Debug.Log("Called buildroad");
+        if (buildModeIsObjects)
+        {
+            if (Input.GetMouseButton(0))
+            {
+                Tile t = WorldController.Instance.GetTileAtWorldCoord(currFramePosition);
+                if (t != null)
+                {
+                    WorldController.Instance.world.PlaceFurniture(buildModeObjectType, t);
+                }
+            }
+
+            if (Input.GetMouseButtonUp(0))
+            {
+                buildModeIsObjects = false;
+            }
+        }
+        else
+        {
+            //When selecting objects
+        }
+    }
+
+    public void SetMode_BuildRoad()
+    {
+        buildModeIsObjects = true;
+        buildModeObjectType = "Road";
+        //build.gameObject.SetActive(false);
+        //delete.gameObject.SetActive(false);
     }
 }

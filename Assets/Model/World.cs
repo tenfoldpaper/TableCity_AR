@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class World
-{
+public class World {
 
     Tile[,] tiles;
 
-    //Dictionary<string, Furniture> furniturePrototypes;
-    Dictionary<string, Object> objectPrototypes;
+    Dictionary<string, Furniture> furniturePrototypes;
 
     // The tile width of the world.
     public int Width { get; protected set; }
@@ -17,7 +15,7 @@ public class World
     // The tile height of the world
     public int Height { get; protected set; }
 
-    Action<Object> cbObjectCreated;
+    Action<Furniture> cbFurnitureCreated;
 
     public World(int width = 100, int height = 100)
     {
@@ -36,24 +34,26 @@ public class World
 
         Debug.Log("World created with " + (Width * Height) + " tiles.");
 
-        CreateObjectPrototypes();
+        CreateFurniturePrototypes();
     }
 
-    void CreateObjectPrototypes()
+    void CreateFurniturePrototypes()
     {
-        objectPrototypes = new Dictionary<string, Object>();
+        Debug.Log("Prototypes created");
+        furniturePrototypes = new Dictionary<string, Furniture>();
 
-        objectPrototypes.Add("Building",
-            Object.CreatePrototype(
+        furniturePrototypes.Add("Building",
+            Furniture.CreatePrototype(
                                 "Building",
                                 1,  // Width
                                 1,  // Height
-                                false // Links to neighbours and "sort of" becomes part of a large object
+                                false, // Links to neighbours and "sort of" becomes part of a large object
+                                true // Requires a road to be adjacent to it to be built.
                             )
         );
 
-        objectPrototypes.Add("Road",
-            Object.CreatePrototype(
+        furniturePrototypes.Add("Road",
+            Furniture.CreatePrototype(
                                 "Road",
                                 1,  // Width
                                 1,  // Height
@@ -61,6 +61,15 @@ public class World
                             )
         );
 
+        furniturePrototypes.Add("Resource",
+            Furniture.CreatePrototype(
+                                "Resource",
+                                1,
+                                1,
+                                false,
+                                true
+                            )
+        );
     }
 
     public void RandomizeTiles()
@@ -70,7 +79,6 @@ public class World
             for (int y = 0; y < Height; y++)
             {
                 tiles[x, y].Type = Tile.TileType.Floor;
-                tiles[x, y].gameObject.GetComponent<SpriteRenderer>().sortingOrder = -1;
             }
         }
     }
@@ -97,21 +105,24 @@ public class World
         return tiles[x, y];
     }
 
-    public void PlaceObject(string objectType, Tile t)
+    public void PlaceFurniture(string objectType, Tile t)
     {
-        Object obj = Object.PlaceInstance(objectPrototypes[objectType], t);
+
+        Furniture obj = Furniture.PlaceInstance(furniturePrototypes[objectType], t);
 
         if (obj == null)
         {
+            Debug.Log("PlaceFurniture failed");
             // Failed to place object -- most likely there was already something there.
             return;
         }
 
-        if (cbObjectCreated != null)
+        if (cbFurnitureCreated != null)
         {
-            cbObjectCreated(obj);
+            cbFurnitureCreated(obj);
         }
     }
+    //This might allow loading to take place dynamically, but probably just instantiating all of it right away is better
 
     public int GetHeight()
     {
@@ -123,13 +134,13 @@ public class World
         return Width;
     }
 
-    public void RegisterObjectCreated(Action<Object> callbackfunc)
+    public void RegisterFurnitureCreated(Action<Furniture> callbackfunc)
     {
-        cbObjectCreated += callbackfunc;
+        cbFurnitureCreated += callbackfunc;
     }
 
-    public void UnregisterObjectCreated(Action<Object> callbackfunc)
+    public void UnregisterFurnitureCreated(Action<Furniture> callbackfunc)
     {
-        cbObjectCreated -= callbackfunc;
+        cbFurnitureCreated -= callbackfunc;
     }
 }

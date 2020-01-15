@@ -5,14 +5,25 @@ using UnityEngine;
 
 public enum TileType { Empty, Floor };
 
-public class Tile
-{
+public class Tile {
 
-    public enum TileType { Empty, Floor, Road };
+    public enum TileType { Empty, Floor, Road, Residential, Industrial, Entertainment, Water, Electricity };
+                           //0      1      2        3           4             5          6          7
     //Action<int, string, float> someFunction;
+    LooseObject looseObject;
+    InstalledObject installedObject;
+    public Furniture furniture{ get; protected set; }
+    public World world { get; protected set; }
+    public int X { get; protected set; }
+    public int Y { get; protected set; }
+
     public GameObject gameObject;
+    
     public bool electricity;
     public bool water;
+    public int level;
+    public int happiness { get; set; }
+
     bool highlightedValue = false;
     public bool highlighted
     {
@@ -26,11 +37,8 @@ public class Tile
             highlightedValue = value;
             if (old != highlightedValue)
             {
-
                 if (!old)
-
                     gameObject.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 1f, 1f);
-
                 else
                     gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
             }
@@ -69,7 +77,7 @@ public class Tile
             transparentValue = value;
             if (old != transparentValue)
             {
-                if (!old)
+                if(!old)
                     gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, .5f);
                 else
                     gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
@@ -92,35 +100,26 @@ public class Tile
                 cbTileTypeChanged(this);
         }
     }
-    LooseObject looseObject;
-    InstalledObject installedObject;
-
-    public Object objects
-    {
-        get; protected set;
-    }
-
-    public World world { get; protected set; }
-
-    public int X { get; protected set; }
-    public int Y { get; protected set; }
+    
 
     public Tile(World world, int x, int y)
     {
         this.world = world;
         this.X = x;
         this.Y = y;
+        this.happiness = 0;
     }
     public bool isOccupied()
     {
-        switch (Type)
+        if(Type == TileType.Empty)
         {
-            case TileType.Floor:
-            case TileType.Empty:
-                return false;
-            default:
-                return true;
+            return false;
         }
+        else
+        {
+            return true;
+        }
+
     }
 
     public void RegisterTileTypeChangedCallback(Action<Tile> callback)
@@ -136,22 +135,100 @@ public class Tile
         cbTileTypeChanged -= callback;
     }
 
-    public bool PlaceObject(Object objInstance)
+    public bool PlaceFurniture(Furniture objInstance)
     {
         if (objInstance == null)
         {
             // We are uninstalling whatever was here before.
-            objects = null;
+            furniture = null;
             return true;
         }
 
-        if (objects != null)
+        // objInstance isn't null
+
+        if (furniture != null)
         {
-            Debug.Log("Trying to assign a object to a tile that already has one!");
+            //Debug.LogError("Trying to assign a furniture to a tile that already has one!");
             return false;
         }
 
-        objects = objInstance;
+        // At this point, everything's fine!
+
+        furniture = objInstance;
         return true;
     }
+
+    public bool AdjacencyCheck()
+    {
+        // This type of object requires a road to be present at one of its four
+        // adjacent blocks. Otherwise, the build will fail.
+        Tile tile = this;
+        Tile t1, t2, t3, t4;
+        int x = tile.X;
+        int y = tile.Y;
+        if(x > 0)
+        {
+            t4 = tile.world.GetTileAt(x - 1, y);
+        }
+        else
+        {
+            t4 = this;
+        }
+        if(y > 0)
+        {
+            t3 = tile.world.GetTileAt(x, y - 1);
+        }
+        else
+        {
+            t3 = this;
+        }
+        if (x < WorldController.Instance.worldX - 1)
+        {
+            t2 = tile.world.GetTileAt(x + 1, y);
+        }
+        else
+        {
+            t2 = this;
+        }
+        if (y < WorldController.Instance.worldY - 1)
+        {
+            t1 = tile.world.GetTileAt(x, y + 1);
+        }
+        else
+        {
+            t1 = this;
+        }
+        if (t1.furniture != null)
+        {
+            if (t1.furniture.objectType == "Road")
+            {
+                return true;
+            }
+        }
+        if (t2.furniture != null)
+        {
+            if (t2.furniture.objectType == "Road")
+            {
+                return true;
+            }
+        }
+        if (t3.furniture != null)
+        {
+            if (t3.furniture.objectType == "Road")
+            {
+                return true;
+            }
+        }
+        if (t4.furniture != null)
+        {
+            if (t4.furniture.objectType == "Road")
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
 }

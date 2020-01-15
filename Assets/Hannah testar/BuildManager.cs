@@ -5,24 +5,26 @@ using UnityEngine;
 public class BuildManager
 {
     private static BuildManager instance;
-    public static BuildManager Instance
-    {
-        get
-        {
-            if (instance == null)
+    public static BuildManager Instance { 
+        get {
+            if(instance == null)
             {
                 instance = new BuildManager();
             }
             return instance;
         }
-        protected set => instance = value;
+         protected set => instance = value; 
     }
 
     public Blueprint residental;
     public Blueprint entertainment;
     public Blueprint industry;
+    public Blueprint watertower;
+    public Blueprint powerplant;
     public BuildManager()
     {
+        Debug.Log("Initializing BuildManager");
+        
         if (entertainment == null)
         {
             GameObject a1 = Resources.Load("Buildings/a1") as GameObject;
@@ -36,67 +38,115 @@ public class BuildManager
             residental = new Blueprint();
             residental.cost = 0;
             residental.prefab = b1;
-
-            UpdateResources();
-
         }
+        
         if (industry == null)
         {
             GameObject c1 = Resources.Load("Buildings/c1") as GameObject;
             industry = new Blueprint();
             industry.cost = 0;
             industry.prefab = c1;
+        }
 
-
-
+        if (watertower == null)
+        {
+            GameObject w1 = Resources.Load("Buildings/TestBuilding") as GameObject;
+            watertower = new Blueprint();
+            watertower.cost = 0;
+            watertower.prefab = w1;
+        }
+        if (powerplant == null)
+        {
+            GameObject p1 = Resources.Load("Buildings/powerplant") as GameObject;
+            powerplant = new Blueprint();
+            powerplant.cost = 0;
+            powerplant.prefab = p1;
         }
     }
 
 
-
     public void SetObjectToBuild(Blueprint objectToBuild, Tile parentTile)
     {
-        if (PlayerStats.Money < objectToBuild.cost)
+        if(WorldController.Instance.playerstats.Money < objectToBuild.cost)
         {
             Debug.Log("Not enough money");
             return;
         }
-        if (parentTile.objects != null)
+        if (parentTile.furniture != null)
         {
             Debug.Log("Already occupied");
             return;
         }
 
-        PlayerStats.Money -= objectToBuild.cost;
-
-        Vector3 position = new Vector3(parentTile.X + 0.5f, parentTile.Y + 0.5f, 0);
-        if (objectToBuild == entertainment)
+        if (!parentTile.AdjacencyCheck())
         {
-            position = new Vector3(parentTile.X + 0.5f, parentTile.Y + 0.5f, -1);
+            Debug.Log("Adjacency check failed.");
+            return;
         }
-        WorldController.Instance.world.PlaceObject("Building", parentTile);
 
-        GameObject go = (GameObject)WorldController.Instance.WrapInstantiate(objectToBuild.prefab, position, Quaternion.Euler(180, 0, 0));
-        //go.GetComponent<BuildingScript>().t = parentTile;
+        WorldController.Instance.playerstats.Money -= objectToBuild.cost;
 
-        UpdateResources();
+        Vector3 position = ConvertTileToWorldspace(parentTile);
+        if(objectToBuild == entertainment)
+        {
+            WorldController.Instance.playerstats.entertainmentCount += 1;
+            Debug.Log("Current entertainment count: " + WorldController.Instance.playerstats.entertainmentCount);
+            position.y += 1f;
+            WorldController.Instance.world.PlaceFurniture("Building", parentTile);
+            parentTile.Type = Tile.TileType.Entertainment;
+        }
+        if (objectToBuild == residental)
+        {
+            WorldController.Instance.playerstats.residentialCount += 1;
+            Debug.Log("Current residential count: " + WorldController.Instance.playerstats.residentialCount);
+            WorldController.Instance.world.PlaceFurniture("Building", parentTile);
+            parentTile.Type = Tile.TileType.Residential;
+        }
+        if (objectToBuild == industry)
+        {
+            WorldController.Instance.playerstats.industrialCount += 1;
+            Debug.Log("Current industry count: " + WorldController.Instance.playerstats.industrialCount);
+            WorldController.Instance.world.PlaceFurniture("Building", parentTile);
+            parentTile.Type = Tile.TileType.Industrial;
+        }
 
-
-        //Debug.Log("Object build! Money left: " + PlayerStats.Money);
+        if (objectToBuild == watertower)
+        {
+            WorldController.Instance.playerstats.water += 1;
+            Debug.Log("Current water tower count: " + WorldController.Instance.playerstats.water);
+            WorldController.Instance.world.PlaceFurniture("Resource", parentTile);
+            WorldController.Instance.UpdateTileResources(parentTile, false, true);
+            parentTile.Type = Tile.TileType.Water;
+        }
+        if (objectToBuild == powerplant)
+        {
+            WorldController.Instance.playerstats.electricity += 1;
+            Debug.Log("Current power plant count: " + WorldController.Instance.playerstats.electricity);
+            WorldController.Instance.world.PlaceFurniture("Resource", parentTile);
+            WorldController.Instance.UpdateTileResources(parentTile, true, true);
+            parentTile.Type = Tile.TileType.Electricity;
+        }
+        Debug.Log("Check?");
+        WorldController.Instance.UpdateTileHappiness(parentTile, 1);
+        Debug.Log("Object built! Money left: " + WorldController.Instance.playerstats.Money.ToString());
+        GameObject go = (GameObject)WorldController.Instance.WrapInstantiate(objectToBuild.prefab, position, Quaternion.Euler(270, 0,0));
         objectToBuild = null;
     }
 
-    void UpdateResources()
+    public Vector3 ConvertTileToWorldspace(Tile tile)
     {
-        GameObject[] resources = GameObject.FindGameObjectsWithTag("resource");
-        foreach (GameObject resource in resources)
-        {
-            resource.gameObject.GetComponent<ElectricityScript>().UpdateElectricity();
-        }
+        return new Vector3(tile.X + 0.5f, 0, -(tile.Y + 0.5f));
     }
     /* Build on Gameobject
     public void BuildObjectOn(Tile t)
     {
         Gameobject object = (GameObject)Instantiate(objectToBuild.prefab, t.transform.position + t.positionOffset, Quaterion.identity)
     }*/
+    /*
+    public void delete()
+    {
+        Destroy(MouseController.selectedObject);
+        MouseController.selectedObject = null;
+    }
+    */
 }

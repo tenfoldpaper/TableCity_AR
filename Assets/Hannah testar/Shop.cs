@@ -12,6 +12,7 @@ public class Shop : MonoBehaviour
     private void Start()
     {
         buildManager = BuildManager.Instance;
+        Debug.Log("Shop initialized");
     }
 
     public void PurchaseRoad()
