@@ -86,9 +86,12 @@ public class WorldController : MonoBehaviour
         // Shake things up, for testing.
         world.RandomizeTiles();
     }
-    public GameObject WrapInstantiate(GameObject prefab, Vector3 position, Quaternion rotation)
+    public GameObject WrapInstantiate(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null)
     {
-        return Instantiate(prefab, position, rotation); 
+        if(parent != null)
+            return Instantiate(prefab, position, rotation, parent); 
+        else
+            return Instantiate(prefab, position, rotation, this.transform);
     }
     void LoadSprites()
     {
@@ -227,12 +230,20 @@ public class WorldController : MonoBehaviour
         // Add our tile/GO pair to the dictionary.
         furnitureGameObjectMap.Add(furn, furn_go);
 
+
         furn_go.name = furn.objectType + "_" + furn.tile.X + "_" + furn.tile.Y;
-        furn_go.transform.position = new Vector3(furn.tile.X, 0.01f, -furn.tile.Y);
-        furn_go.transform.rotation = Quaternion.Euler(270, 0, 0);
-        furn_go.transform.SetParent(this.transform, true);
-        
-        if(furn.objectType == "Road") { 
+        //furn_go.transform.position = new Vector3(furn.tile.X, 0.01f, -furn.tile.Y);
+
+        //furn_go.transform.position = new Vector3(furn.tile.X, furn.tile.Y, -0.01f);
+        //furn_go.transform.rotation = Quaternion.Euler(0, 0, 0);
+
+        //furn_go.transform.SetParent(this.transform, true);
+        furn_go.transform.parent = furn.tile.gameObject.transform.parent;
+        furn_go.transform.position = furn.tile.gameObject.transform.position - new Vector3(0.001f, 0.001f, 0.001f);
+
+        furn_go.transform.rotation = furn.tile.gameObject.transform.rotation;
+
+        if (furn.objectType == "Road") { 
             furn_go.AddComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
 
             // Register our callback so that our GameObject gets updated whenever

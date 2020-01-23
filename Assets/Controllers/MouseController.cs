@@ -15,7 +15,7 @@ public class MouseController : MonoBehaviour
     GameObject currentMenu;
     Vector3 dragStartPosition;
     Vector3 lastFramePosition;
-    
+    public Camera Camera_;
     public bool draging;
     public int currentType = -1;
     List<Tile> transparentTiles = new List<Tile>();
@@ -172,7 +172,9 @@ public class MouseController : MonoBehaviour
     }
     Vector3 GetGamePlaneIntersectionPoint()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        Ray ray = Camera_.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (gamePlane.Raycast(ray, out hit, 1000.0f))
         {
@@ -242,7 +244,7 @@ public class MouseController : MonoBehaviour
         // Handle screen dragging
         if (Input.GetMouseButton(2) || Input.GetMouseButton(1)) // Right or Middle mouse button
         {
-            //Vector3 diff = lastFramePosition - currFramePosition;
+            Vector3 diff = lastFramePosition - currFramePosition;
             //Debug.Log(diff);
             //Camera.main.transform.Translate(diff);
             float speedH = 2.0f;
@@ -251,16 +253,19 @@ public class MouseController : MonoBehaviour
             float yaw = speedH * Input.GetAxis("Mouse X");
             float pitch = -speedV * Input.GetAxis("Mouse Y");
 
-            Camera.main.transform.eulerAngles += new Vector3(pitch, yaw, 0.0f);
+            //Camera.main.transform.eulerAngles += new Vector3(pitch, yaw, 0.0f);
+            Camera_.transform.eulerAngles += new Vector3(pitch, yaw, 0.0f);
         }
         float speed = 10.0f;
         float t_y = Input.GetAxis("Vertical") * speed;
         float t_x = Input.GetAxis("Horizontal") * speed;
+        //Debug.Log(t_y);
         t_x *= Time.deltaTime;
         t_y *= Time.deltaTime;
-        Camera.main.transform.Translate(new Vector3(t_x, t_y, 0));
-
-        lastFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //Camera.main.transform.Translate(new Vector3(t_x, t_y, 0));
+        Camera_.transform.Translate(new Vector3(t_x, t_y, 0));
+        //lastFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        lastFramePosition = Camera_.ScreenToWorldPoint(Input.mousePosition);
         lastFramePosition.z = 0;
     }
     Tile GetTileAtWorldCoord(Vector3 coord)

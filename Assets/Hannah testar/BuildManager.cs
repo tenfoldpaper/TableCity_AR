@@ -129,7 +129,7 @@ public class BuildManager
         Debug.Log("Check?");
         WorldController.Instance.UpdateTileHappiness(parentTile, 1);
         Debug.Log("Object built! Money left: " + WorldController.Instance.playerstats.Money.ToString());
-        GameObject go = (GameObject)WorldController.Instance.WrapInstantiate(objectToBuild.prefab, position, Quaternion.Euler(270, 0,0));
+        GameObject go = (GameObject)WorldController.Instance.WrapInstantiate(objectToBuild.prefab, parentTile.gameObject.transform.position, parentTile.gameObject.transform.rotation);
         objectToBuild = null;
     }
 

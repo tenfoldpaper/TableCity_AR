@@ -142,6 +142,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 836e12c643546a746857c1e4f3c9f0ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entertainment:
+    prefab: {fileID: 0}
+    cost: 0
+  residental:
+    prefab: {fileID: 0}
+    cost: 0
+  industry:
+    prefab: {fileID: 0}
+    cost: 0
 --- !u!1 &323157621425304364
 GameObject:
   m_ObjectHideFlags: 0
@@ -284,6 +293,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 836e12c643546a746857c1e4f3c9f0ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entertainment:
+    prefab: {fileID: 0}
+    cost: 0
+  residental:
+    prefab: {fileID: 0}
+    cost: 0
+  industry:
+    prefab: {fileID: 0}
+    cost: 0
 --- !u!1 &1393218040117672908
 GameObject:
   m_ObjectHideFlags: 0
@@ -374,6 +392,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 836e12c643546a746857c1e4f3c9f0ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entertainment:
+    prefab: {fileID: 0}
+    cost: 0
+  residental:
+    prefab: {fileID: 0}
+    cost: 0
+  industry:
+    prefab: {fileID: 0}
+    cost: 0
 --- !u!1 &1574420535903793525
 GameObject:
   m_ObjectHideFlags: 0
@@ -516,6 +543,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 836e12c643546a746857c1e4f3c9f0ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entertainment:
+    prefab: {fileID: 0}
+    cost: 0
+  residental:
+    prefab: {fileID: 0}
+    cost: 0
+  industry:
+    prefab: {fileID: 0}
+    cost: 0
 --- !u!1 &1941295978950376069
 GameObject:
   m_ObjectHideFlags: 0
@@ -658,6 +694,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 836e12c643546a746857c1e4f3c9f0ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entertainment:
+    prefab: {fileID: 0}
+    cost: 0
+  residental:
+    prefab: {fileID: 0}
+    cost: 0
+  industry:
+    prefab: {fileID: 0}
+    cost: 0
 --- !u!1 &2103512046366427505
 GameObject:
   m_ObjectHideFlags: 0
@@ -800,6 +845,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 836e12c643546a746857c1e4f3c9f0ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entertainment:
+    prefab: {fileID: 0}
+    cost: 0
+  residental:
+    prefab: {fileID: 0}
+    cost: 0
+  industry:
+    prefab: {fileID: 0}
+    cost: 0
 --- !u!1 &3205738906088172545
 GameObject:
   m_ObjectHideFlags: 0
@@ -1173,6 +1227,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 836e12c643546a746857c1e4f3c9f0ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entertainment:
+    prefab: {fileID: 0}
+    cost: 0
+  residental:
+    prefab: {fileID: 0}
+    cost: 0
+  industry:
+    prefab: {fileID: 0}
+    cost: 0
 --- !u!1 &6633092013916449091
 GameObject:
   m_ObjectHideFlags: 0
@@ -1315,6 +1378,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 836e12c643546a746857c1e4f3c9f0ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entertainment:
+    prefab: {fileID: 0}
+    cost: 0
+  residental:
+    prefab: {fileID: 0}
+    cost: 0
+  industry:
+    prefab: {fileID: 0}
+    cost: 0
 --- !u!1 &7063024160930682953
 GameObject:
   m_ObjectHideFlags: 0
