@@ -71,6 +71,7 @@ public class WorldController : MonoBehaviour
                 tile_go.transform.SetParent(this.transform, false);
                 // Add a sprite renderer, but don't set a sprite since they are all empty
                 SpriteRenderer tile_sr = tile_go.AddComponent<SpriteRenderer>();
+                tile_go.GetComponent<SpriteRenderer>().sprite = floorSprite;
                 BoxCollider tile_bc = tile_go.AddComponent<BoxCollider>();
                 tile_bc.center = bc_center;
                 tile_bc.size = new Vector3(1, 1, 0.01f);
@@ -83,8 +84,6 @@ public class WorldController : MonoBehaviour
             }
         }
 
-        // Shake things up, for testing.
-        world.RandomizeTiles();
     }
     public GameObject WrapInstantiate(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null)
     {
@@ -184,7 +183,7 @@ public class WorldController : MonoBehaviour
     // This function should be called automatically whenever a tile's type gets changed.
     void OnTileTypeChanged(Tile tile_data)
     {
-
+        Debug.Log("Changing tile type");
 		GameObject tile_go = tile_data.gameObject;
 
         if (tile_go == null)
@@ -358,8 +357,9 @@ public class WorldController : MonoBehaviour
         // 5 Manhattan distance radius.
 
         // resourceType: 0 = water, 1 = electricity
-        int currentResource = 0;
-        if (resourceType)
+        Debug.Log("Updating tile resources");
+        int currentResource;
+        if (!resourceType)
         {
             currentResource = epicentre.waterResources;
         }
@@ -395,27 +395,31 @@ public class WorldController : MonoBehaviour
 
                     Debug.Log(currentX.ToString() + " " + currentY.ToString());
                     Tile currentTile = world.GetTileAt(currentX, currentY);
-                    if (resourceType)
+                    
+                    if (resourceType && currentTile.requiresPower())
                     {
-                        if(currentResource >= currentTile.needPower)
+                        if(currentResource >= currentTile.needPower && !currentTile.electricity)
                         {
                             currentTile.electricity = resourceBool;
                             currentTile.hasPower = currentTile.needPower;
-                            currentTile.happiness += 5;
+                            currentTile.increaseHappiness(5);
+                            currentResource -= currentTile.needPower;
                         }
                         else
                         {
+                            
                             Debug.Log("Not enough power!");
                             //TODO: Would be nice to render something here as a visual indicator above the building.
                         }
                     }
-                    else
+                    else if(currentTile.requiresWater())
                     {
-                        if(currentResource >= currentTile.needWater)
+                        if(currentResource >= currentTile.needWater && !currentTile.water)
                         {
                             currentTile.water = resourceBool;
                             currentTile.hasWater = currentTile.needWater;
-                            currentTile.happiness += 5;
+                            currentTile.increaseHappiness(5);
+                            currentResource -= currentTile.needWater;
                         }
                         else
                         {
@@ -423,9 +427,25 @@ public class WorldController : MonoBehaviour
                             //TODO: Render a visual indicator for the lack
                         }
                     }
+                    else
+                    {
+                        Debug.Log("This tile doesn't require water or power");
+                        Debug.Log(currentX.ToString() + " " + currentY.ToString());
+                    }
                 }
             }
         }
+        if (!resourceType)
+        {
+            epicentre.waterResources = currentResource;
+            Debug.Log("Remaining water resources: " + currentResource.ToString());
+        }
+        else
+        {
+            epicentre.electricityResources = currentResource;
+            Debug.Log("Remaining electricity resources: " + currentResource.ToString());
+        }
+
         CalculateTotalHappinessRatio();
 
         Debug.Log("Tile resource has been updated.");
@@ -472,23 +492,19 @@ public class WorldController : MonoBehaviour
                 int currentY = epicentre.Y + j;
                 if (currentX > worldX - 1)
                 {
-                    break;
-                    currentX = worldX;
+                    continue;
                 }
                 if (currentY > worldY - 1)
                 {
-                    break;
-                    currentY = worldY;
+                    continue;
                 }
                 if (currentX < 0)
                 {
-                    break;
-                    currentX = 0;
+                    continue;
                 }
                 if (currentY < 0)
                 {
-                    break;
-                    currentY = 0;
+                    continue;
                 }
                 Tile currentTile = world.GetTileAt(currentX, currentY);
                 
@@ -546,7 +562,7 @@ public class WorldController : MonoBehaviour
         }
         else
         {
-            CurrentHappinessRatio = (float)(totalHappiness / (residentialCount * 20));
+            CurrentHappinessRatio = ((float)totalHappiness / ((float)residentialCount * 20));
         }
         Debug.Log("Current HRatio: " + CurrentHappinessRatio.ToString());
     }

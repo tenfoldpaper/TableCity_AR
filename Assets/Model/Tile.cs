@@ -37,7 +37,7 @@ public class Tile {
     public int needWater;
     public int hasWater;
 
-    public void setTileData(int maxPop = 0, int nPower, int nWater, int nPop, int nElecRes = 0, int nWaterRes = 0)
+    public void setTileData(int maxPop = 0, int nPower = 0, int nWater = 0, int nPop = 0, int nElecRes = 0, int nWaterRes = 0)
     {
         this.maxPopulation = maxPop;
         this.needPower = nPower;
@@ -254,5 +254,26 @@ public class Tile {
         return false;
     }
 
+    public bool requiresWater()
+    {
+        if (this.Type == TileType.Entertainment || this.Type == TileType.Industrial || this.Type == TileType.Residential)
+        {
+            return true;
+        }
+        else return false;
+    }
 
+    public bool requiresPower()
+    {
+        if (this.Type == TileType.Entertainment || this.Type == TileType.Industrial || this.Type == TileType.Residential || this.Type == TileType.Water)
+        {
+            return true;
+        }
+        else return false;
+    }
+
+    public void increaseHappiness(int nhappy)
+    {
+        this.happiness = Mathf.Min(this.happiness + nhappy, 10);
+    }
 }

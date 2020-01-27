@@ -5,23 +5,27 @@ using UnityEngine;
 public class ResourceController : MonoBehaviour
 {
     public static ResourceController Instance { get; protected set; }
-
-    public Mesh moneyMesh;
-    public Mesh electMesh;
-    public Mesh populMesh;
-    public Mesh happyMesh;
+    GameObject moneyObject;
+    GameObject electObject;
+    GameObject populObject;
+    GameObject happyObject;
 
     // Start is called before the first frame update
     void Start()
     {
         Debug.Log("ResourceController initialized");
         InvokeRepeating("UpdatePlayerMoney", 1.0f, 5.0f);
+        InvokeRepeating("UpdateResourceScale", 0f, 0.5f);
         this.transform.position = this.gameObject.transform.parent.position;
+        moneyObject = this.transform.Find("moneyMeshTemp").gameObject;
+        electObject = this.transform.Find("electMeshTemp").gameObject;
+        populObject = this.transform.Find("populMeshTemp").gameObject;
+        happyObject = this.transform.Find("happyMeshTemp").gameObject;
+        moneyObject.transform.position = this.transform.position + new Vector3(-1, 0, 1);
+        electObject.transform.position = this.transform.position + new Vector3(-2, 0, 1);
+        populObject.transform.position = this.transform.position + new Vector3(-3, 0, 1);
+        happyObject.transform.position = this.transform.position + new Vector3(-4, 0, 1);
         //this.GetComponent<MeshRenderer>().
-        //moneyMesh.transform.position = this.transform.position + new Vector3(1, 1, 0);
-        //electMesh.transform.position = this.transform.position + new Vector3(2, 1, 0);
-        //populMesh.transform.position = this.transform.position + new Vector3(3, 1, 0);
-        //happyMesh.transform.position = this.transform.position + new Vector3(4, 1, 0);
     }
 
     // Update is called once per frame
@@ -38,6 +42,14 @@ public class ResourceController : MonoBehaviour
             + ((int)(WorldController.Instance.CurrentHappinessRatio * 8.0f) * WorldController.Instance.playerstats.residentialCount);
         WorldController.Instance.playerstats.Money -= (15 * WorldController.Instance.playerstats.electricity) + (10 * WorldController.Instance.playerstats.water);
         Debug.Log("Current money: " + WorldController.Instance.playerstats.Money.ToString());
+        
     }
 
+    void UpdateResourceScale()
+    {
+        float moneyScale = Mathf.Min(((float)WorldController.Instance.playerstats.Money / 1000), 1);
+        
+        //Debug.Log(moneyScale);
+        moneyObject.transform.localScale = new Vector3(moneyScale, moneyScale, moneyScale);
+    }
 }

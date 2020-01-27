@@ -115,16 +115,16 @@ public class BuildManager
             WorldController.Instance.playerstats.water += 1;
             Debug.Log("Current water tower count: " + WorldController.Instance.playerstats.water);
             WorldController.Instance.world.PlaceFurniture("Resource", parentTile);
-            WorldController.Instance.UpdateTileResources(parentTile, false, true);
             parentTile.Type = Tile.TileType.Water;
+            WorldController.Instance.UpdateTileResources(parentTile, false, true);
         }
         if (objectToBuild == powerplant)
         {
             WorldController.Instance.playerstats.electricity += 1;
             Debug.Log("Current power plant count: " + WorldController.Instance.playerstats.electricity);
             WorldController.Instance.world.PlaceFurniture("Resource", parentTile);
-            WorldController.Instance.UpdateTileResources(parentTile, true, true);
             parentTile.Type = Tile.TileType.Electricity;
+            WorldController.Instance.UpdateTileResources(parentTile, true, true);
         }
         Debug.Log("Check?");
         WorldController.Instance.UpdateTileHappiness(parentTile, 1);

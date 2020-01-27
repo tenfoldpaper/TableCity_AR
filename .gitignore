@@ -57,3 +57,5 @@ sysinfo.txt
 # =========================
 # Operating System Files
 # =========================
+*.meta
+*.meta
