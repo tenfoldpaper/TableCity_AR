@@ -241,8 +241,7 @@ public class interactUIExt : BaseInputModule
         // Draw a new cursor position if current menu is present AND active
         if(currentMenu != null && currentMenu.activeSelf)
         {
-            Debug.Log(sourceTile);
-            Vector3 cursorPosition = new Vector3(sourceTile.X, 0.1f, sourceTile.Y);
+            Vector3 cursorPosition = sourceTile.gameObject.transform.position + (sourceTile.gameObject.transform.parent.rotation * new Vector3(0, 0.1f, 0));
             circleCursor.transform.position = cursorPosition;
             return;
         }
@@ -251,8 +250,7 @@ public class interactUIExt : BaseInputModule
             if (tileBeingPointed != null)
             {
                 circleCursor.SetActive(true);
-                Vector3 cursorPosition = new Vector3(tileBeingPointed.X, 0.1f, tileBeingPointed.Y);
-                //Debug.Log("current cursor position: " + cursorPosition);
+                Vector3 cursorPosition = tileBeingPointed.gameObject.transform.position + (tileBeingPointed.gameObject.transform.parent.rotation * new Vector3(0, 0.1f, 0));
                 circleCursor.transform.position = cursorPosition;
             }
         }

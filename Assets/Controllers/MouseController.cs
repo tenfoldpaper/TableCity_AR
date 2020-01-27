@@ -185,14 +185,16 @@ public class MouseController : MonoBehaviour
             return new Vector3(0, 0, 0);
         }
     }
-    void UpdateCursor()
+    void UpdateCursor
+        ()
     {
         if (currentMenu == null || !currentMenu.activeSelf)
         {
             if (tileUnderMouse != null)
             {
                 circleCursor.SetActive(true);
-                Vector3 cursorPosition = new Vector3(tileUnderMouse.X, tileUnderMouse.Y, 0);
+                //Project the cursor a little above the WorldController plane in the z direction so that it's clearly visible
+                Vector3 cursorPosition = tileUnderMouse.gameObject.transform.position + (tileUnderMouse.gameObject.transform.parent.rotation * new Vector3(0, 0, -0.1f));
                 circleCursor.transform.position = cursorPosition;
             }
             else
