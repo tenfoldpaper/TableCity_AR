@@ -72,16 +72,6 @@ public class World {
         );
     }
 
-    public void RandomizeTiles()
-    {
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                tiles[x, y].Type = Tile.TileType.Floor;
-            }
-        }
-    }
     public bool Occupied(int tile_x, int tile_y, int w, int h)
     {
         for (int x = tile_x; x < w; x++)
@@ -96,6 +86,7 @@ public class World {
         }
         return false;
     }
+
     public Tile GetTileAt(int x, int y)
     {
         if (x >= Width || x < 0 || y >= Height || y < 0)

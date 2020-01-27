@@ -12,6 +12,8 @@ public class Tile {
     
     public Furniture furniture{ get; protected set; }
     public World world { get; protected set; }
+
+    // Local XY Coordinates
     public int X { get; protected set; }
     public int Y { get; protected set; }
 
@@ -30,8 +32,20 @@ public class Tile {
     public int waterResources;
 
     // Tiles that are occupied with residential/industrial/entertainment buildings require both power and water. 
-    public bool needPower;
-    public bool needWater;
+    public int needPower;
+    public int hasPower;
+    public int needWater;
+    public int hasWater;
+
+    public void setTileData(int maxPop = 0, int nPower, int nWater, int nPop, int nElecRes = 0, int nWaterRes = 0)
+    {
+        this.maxPopulation = maxPop;
+        this.needPower = nPower;
+        this.needWater = nWater;
+        this.population = nPop;
+        this.electricityResources = nElecRes;
+        this.waterResources = nWaterRes;
+    }
 
     
     bool highlightedValue = false;

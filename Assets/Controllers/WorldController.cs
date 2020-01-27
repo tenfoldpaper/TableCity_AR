@@ -206,12 +206,33 @@ public class WorldController : MonoBehaviour
         else if (tile_data.Type == Tile.TileType.Road)
         {
             tile_go.GetComponent<SpriteRenderer>().sprite = roadSprite;
+            tile_data.setTileData(0, 0, 0, 0, 0, 0);
         }
         else if (tile_data.Type == Tile.TileType.Residential)
         {
             tile_go.GetComponent<SpriteRenderer>().sprite = residentialSprite;
-            tile_data.maxPopulation = 100;
+            tile_data.setTileData(100, 1, 1, 0, 0, 0);
+        }
+        else if (tile_data.Type == Tile.TileType.Industrial)
+        {
+            tile_go.GetComponent<SpriteRenderer>().sprite = industrialSprite;
 
+            tile_data.setTileData(0, 3, 2, 0, 0, 0);
+        }
+        else if (tile_data.Type == Tile.TileType.Entertainment)
+        {
+            tile_go.GetComponent<SpriteRenderer>().sprite = entertainmentSprite;
+            tile_data.setTileData(0, 2, 1, 0, 0, 0);
+        }
+        else if (tile_data.Type == Tile.TileType.Water)
+        {
+            tile_go.GetComponent<SpriteRenderer>().sprite = waterSprite;
+            tile_data.setTileData(0, 2, 0, 0, 0, 50);
+        }
+        else if (tile_data.Type == Tile.TileType.Electricity)
+        {
+            tile_go.GetComponent<SpriteRenderer>().sprite = electricitySprite;
+            tile_data.setTileData(0, 0, 0, 0, 50, 0);
         }
     }
 
@@ -337,51 +358,74 @@ public class WorldController : MonoBehaviour
         // 5 Manhattan distance radius.
 
         // resourceType: 0 = water, 1 = electricity
-
-        for(int i = -5; i < 6; i++) // X axis
+        int currentResource = 0;
+        if (resourceType)
         {
-            for(int j = -5; j < 6; j++) // Y axis
+            currentResource = epicentre.waterResources;
+        }
+        else
+        {
+            currentResource = epicentre.electricityResources;
+        }
+        while(currentResource > 0) { 
+            for(int i = -5; i < 6; i++) // X axis
             {
-                int currentX = epicentre.X + i;
-                int currentY = epicentre.Y + j;
+                for(int j = -5; j < 6; j++) // Y axis
+                {
+                    int currentX = epicentre.X + i;
+                    int currentY = epicentre.Y + j;
 
-                // Don't accidentally get tiles that are out of range!
-                if(currentX > worldX - 1)
-                {
-                    break;
-                    currentX = worldX;
-                }
-                if(currentY > worldY - 1)
-                {
-                    break;
-                    currentY = worldY;
-                }
-                if(currentX < 0)
-                {
-                    break;
-                    currentX = 0;
-                }
-                if(currentY < 0)
-                {
-                    break;
-                    currentY = 0;
-                }
+                    // Don't accidentally get tiles that are out of range!
+                    if(currentX > worldX - 1)
+                    {
+                        continue;
+                    }
+                    if(currentY > worldY - 1)
+                    {
+                        continue;
+                    }
+                    if(currentX < 0)
+                    {
+                        continue;
+                    }
+                    if(currentY < 0)
+                    {
+                        continue;
+                    }
 
-                Debug.Log(currentX.ToString() + " " + currentY.ToString());
-                Tile currentTile = world.GetTileAt(currentX, currentY);
-                if (resourceType)
-                {
-                    currentTile.electricity = resourceBool;
-                    currentTile.happiness += 5;
-                }
-                else
-                {
-                    currentTile.water = resourceBool;
-                    currentTile.happiness += 5;
+                    Debug.Log(currentX.ToString() + " " + currentY.ToString());
+                    Tile currentTile = world.GetTileAt(currentX, currentY);
+                    if (resourceType)
+                    {
+                        if(currentResource >= currentTile.needPower)
+                        {
+                            currentTile.electricity = resourceBool;
+                            currentTile.hasPower = currentTile.needPower;
+                            currentTile.happiness += 5;
+                        }
+                        else
+                        {
+                            Debug.Log("Not enough power!");
+                            //TODO: Would be nice to render something here as a visual indicator above the building.
+                        }
+                    }
+                    else
+                    {
+                        if(currentResource >= currentTile.needWater)
+                        {
+                            currentTile.water = resourceBool;
+                            currentTile.hasWater = currentTile.needWater;
+                            currentTile.happiness += 5;
+                        }
+                        else
+                        {
+                            Debug.Log("Not enough water!");
+                            //TODO: Render a visual indicator for the lack
+                        }
+                    }
                 }
             }
         }
-
         CalculateTotalHappinessRatio();
 
         Debug.Log("Tile resource has been updated.");
