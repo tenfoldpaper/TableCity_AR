@@ -9,9 +9,7 @@ public class Tile {
 
     public enum TileType { Empty, Floor, Road, Residential, Industrial, Entertainment, Water, Electricity };
                            //0      1      2        3           4             5          6          7
-    //Action<int, string, float> someFunction;
-    LooseObject looseObject;
-    InstalledObject installedObject;
+    
     public Furniture furniture{ get; protected set; }
     public World world { get; protected set; }
     public int X { get; protected set; }
@@ -19,11 +17,23 @@ public class Tile {
 
     public GameObject gameObject;
     
+    // Does this tile rest within the range of a power plant/water plant?
     public bool electricity { get; set; }
     public bool water { get; set; }
+
     public int level;
     public int happiness { get; set; }
+    public int population { get; set; }
+    public int maxPopulation { get; set; }
 
+    public int electricityResources;
+    public int waterResources;
+
+    // Tiles that are occupied with residential/industrial/entertainment buildings require both power and water. 
+    public bool needPower;
+    public bool needWater;
+
+    
     bool highlightedValue = false;
     public bool highlighted
     {

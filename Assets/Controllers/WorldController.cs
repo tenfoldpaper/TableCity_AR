@@ -196,6 +196,8 @@ public class WorldController : MonoBehaviour
         if (tile_data.Type == Tile.TileType.Floor)
         {
             tile_go.GetComponent<SpriteRenderer>().sprite = floorSprite;
+            tile_data.maxPopulation = 0;
+            
         }
         else if (tile_data.Type == Tile.TileType.Empty)
         {
@@ -205,9 +207,11 @@ public class WorldController : MonoBehaviour
         {
             tile_go.GetComponent<SpriteRenderer>().sprite = roadSprite;
         }
-        else
+        else if (tile_data.Type == Tile.TileType.Residential)
         {
-            tile_go.GetComponent<SpriteRenderer>().sprite = floorSprite;
+            tile_go.GetComponent<SpriteRenderer>().sprite = residentialSprite;
+            tile_data.maxPopulation = 100;
+
         }
     }
 

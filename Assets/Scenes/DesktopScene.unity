@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028377, g: 0.22571409, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571328, b: 0.3069217, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -149,13 +149,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23c646c8e3dff2e4cb754b9131aa1722, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moneyMesh: {fileID: 1089477394901147589, guid: eddc3844d4c1f8c4388a0ca6c7a052a8,
+  moneyMesh: {fileID: 1089477394901147589, guid: e9150185f5f11154fa30ff2b410c812b,
     type: 3}
-  electMesh: {fileID: 796523321543492552, guid: 57ef522553ef3294788852340b3721a0,
+  electMesh: {fileID: 796523321543492552, guid: c58527f86bb97284f9207102a242c510,
     type: 3}
-  populMesh: {fileID: 7179092842982609337, guid: 1a1757c1c2dabf94aaa036d6e6ff3564,
+  populMesh: {fileID: 7179092842982609337, guid: ecf7136de3e9c6647a310faebebedfdb,
     type: 3}
-  happyMesh: {fileID: 5188486389190139678, guid: e22fbb6d8dcd3e346b3caa10da8c8b53,
+  happyMesh: {fileID: 5188486389190139678, guid: d52d336a8417f2240afaa1c0b71cd340,
     type: 3}
 --- !u!4 &380151878
 Transform:
