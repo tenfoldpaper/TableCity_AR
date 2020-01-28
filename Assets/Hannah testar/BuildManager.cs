@@ -21,49 +21,61 @@ public class BuildManager
     public Blueprint industry;
     public Blueprint watertower;
     public Blueprint powerplant;
+
     public BuildManager()
     {
         Debug.Log("Initializing BuildManager");
-        
+
         if (entertainment == null)
         {
-            GameObject a1 = Resources.Load("Buildings/a1") as GameObject;
             entertainment = new Blueprint();
             entertainment.cost = 0;
-            entertainment.prefab = a1;
+            entertainment.number = 4;
+            entertainment.prefab = new GameObject[4];
+            entertainment.prefab[0] = Resources.Load("Buildings/a1") as GameObject;
+            entertainment.prefab[1] = Resources.Load("Buildings/a2") as GameObject;
+            entertainment.prefab[2] = Resources.Load("Buildings/a3") as GameObject;
+            entertainment.prefab[3] = Resources.Load("Buildings/a4") as GameObject;
+
         }
         if (residental == null)
         {
-            GameObject b1 = Resources.Load("Buildings/b1") as GameObject;
             residental = new Blueprint();
             residental.cost = 0;
-            residental.prefab = b1;
+            residental.number = 3;
+            residental.prefab = new GameObject[3];
+            residental.prefab[0] = Resources.Load("Buildings/b1") as GameObject;
+            residental.prefab[1] = Resources.Load("Buildings/b2") as GameObject;
+            residental.prefab[2] = Resources.Load("Buildings/b3") as GameObject;
         }
         
         if (industry == null)
         {
-            GameObject c1 = Resources.Load("Buildings/c1") as GameObject;
             industry = new Blueprint();
             industry.cost = 0;
-            industry.prefab = c1;
+            industry.number = 2;
+            industry.prefab = new GameObject[3];
+            industry.prefab[0] = Resources.Load("Buildings/c1") as GameObject;
+            industry.prefab[1] = Resources.Load("Buildings/c2") as GameObject;
         }
 
         if (watertower == null)
         {
-            GameObject w1 = Resources.Load("Buildings/TestBuilding") as GameObject;
             watertower = new Blueprint();
             watertower.cost = 0;
-            watertower.prefab = w1;
+            watertower.number = 1;
+            watertower.prefab = new GameObject[1];
+            watertower.prefab[0] = Resources.Load("Buildings/watertower") as GameObject;
         }
         if (powerplant == null)
         {
-            GameObject p1 = Resources.Load("Buildings/powerplant") as GameObject;
             powerplant = new Blueprint();
             powerplant.cost = 0;
-            powerplant.prefab = p1;
+            powerplant.number = 1;
+            powerplant.prefab = new GameObject[1];
+            powerplant.prefab[0] = Resources.Load("Buildings/powerplant") as GameObject;
         }
     }
-
 
     public void SetObjectToBuild(Blueprint objectToBuild, Tile parentTile)
     {
@@ -129,7 +141,8 @@ public class BuildManager
         Debug.Log("Check?");
         WorldController.Instance.UpdateTileHappiness(parentTile, 1);
         Debug.Log("Object built! Money left: " + WorldController.Instance.playerstats.Money.ToString());
-        GameObject go = (GameObject)WorldController.Instance.WrapInstantiate(objectToBuild.prefab, parentTile.gameObject.transform.position, parentTile.gameObject.transform.rotation);
+        GameObject go = (GameObject)WorldController.Instance.WrapInstantiate(objectToBuild.Randomize(), parentTile.gameObject.transform.position, parentTile.gameObject.transform.rotation);
+
         objectToBuild = null;
     }
 
