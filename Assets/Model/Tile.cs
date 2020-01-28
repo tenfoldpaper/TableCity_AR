@@ -18,6 +18,7 @@ public class Tile {
     public int Y { get; protected set; }
 
     public GameObject gameObject;
+    public GameObject waterStatus;
     
     // Does this tile rest within the range of a power plant/water plant?
     public bool electricity { get; set; }

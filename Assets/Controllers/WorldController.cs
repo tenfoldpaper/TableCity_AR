@@ -44,7 +44,8 @@ public class WorldController : MonoBehaviour
             Debug.LogError("There should never be two world controllers.");
         }
         Instance = this;
-
+        powerTiles = new List<Tile>();
+        waterTiles = new List<Tile>();
         // Create a world with Empty tiles
         world = new World(worldX, worldY);
         playerstats = new PlayerStats();
@@ -75,6 +76,19 @@ public class WorldController : MonoBehaviour
                 SpriteRenderer tile_sr = tile_go.AddComponent<SpriteRenderer>();
                 tile_go.GetComponent<SpriteRenderer>().sprite = floorSprite;
                 BoxCollider tile_bc = tile_go.AddComponent<BoxCollider>();
+
+
+
+                // Add the status game objects, then disable them 
+                tile_data.waterStatus = Resources.Load("Status/water") as GameObject;
+                tile_data.waterStatus.transform.position = tile_go.transform.position + (tile_go.transform.rotation * new Vector3(0, 0, -1));
+                tile_data.waterStatus.transform.rotation = tile_go.transform.rotation * Quaternion.Euler(0, 90, 0);
+                tile_data.waterStatus.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+                //tile_data.waterStatus.transform.parent = tile_go.transform;
+                tile_data.waterStatus.name = (tile_go.name + "WaterStatus");
+                WrapInstantiate(tile_data.waterStatus, tile_data.waterStatus.transform.position, tile_data.waterStatus.transform.rotation);
+                tile_data.waterStatus.SetActive(true);
+
                 tile_bc.center = bc_center;
                 tile_bc.size = new Vector3(1, 1, 0.01f);
                 tile_go.layer = 8;

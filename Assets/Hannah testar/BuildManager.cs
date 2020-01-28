@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class BuildManager
@@ -24,7 +25,7 @@ public class BuildManager
     public BuildManager()
     {
         Debug.Log("Initializing BuildManager");
-        
+        Debug.Log(Application.dataPath);
         if (entertainment == null)
         {
             GameObject a1 = Resources.Load("Buildings/a1") as GameObject;
@@ -35,8 +36,10 @@ public class BuildManager
         if (residental == null)
         {
             GameObject b1 = Resources.Load("Buildings/b1") as GameObject;
+            GameObject happiness = Resources.Load("Status/happiness") as GameObject;
             residental = new Blueprint();
             residental.cost = 0;
+            residental.status = happiness;
             residental.prefab = b1;
         }
         
@@ -100,6 +103,8 @@ public class BuildManager
             WorldController.Instance.playerstats.residentialCount += 1;
             Debug.Log("Current residential count: " + WorldController.Instance.playerstats.residentialCount);
             WorldController.Instance.world.PlaceFurniture("Building", parentTile);
+            GameObject happyObject = (GameObject)WorldController.Instance.WrapInstantiate(objectToBuild.status, parentTile.gameObject.transform.position, parentTile.gameObject.transform.rotation);
+            happyObject.transform.position = happyObject.transform.rotation * new Vector3(0, 1, 0);
             parentTile.Type = Tile.TileType.Residential;
         }
         if (objectToBuild == industry)
@@ -131,15 +136,21 @@ public class BuildManager
         Debug.Log("Check?");
         WorldController.Instance.UpdateTileHappiness(parentTile, 1);
         Debug.Log("Object built! Money left: " + WorldController.Instance.playerstats.Money.ToString());
-        foreach (var resourceTile in WorldController.Instance.waterTiles)
+        if (WorldController.Instance.waterTiles.Count > 0)
         {
-            WorldController.Instance.UpdateTileResources(resourceTile, false, true);
-            Debug.Log("Looping through water");
+            foreach (var resourceTile in WorldController.Instance.waterTiles)
+            {
+                WorldController.Instance.UpdateTileResources(resourceTile, false, true);
+                Debug.Log("Looping through water");
+            }
         }
-        foreach (var resourceTile in WorldController.Instance.powerTiles)
+        if(WorldController.Instance.powerTiles.Count > 0)
         {
-            WorldController.Instance.UpdateTileResources(resourceTile, true, true);
-            Debug.Log("Looping through power");
+            foreach (var resourceTile in WorldController.Instance.powerTiles)
+            {
+                WorldController.Instance.UpdateTileResources(resourceTile, true, true);
+                Debug.Log("Looping through power");
+            } 
         }
         GameObject go = (GameObject)WorldController.Instance.WrapInstantiate(objectToBuild.prefab, parentTile.gameObject.transform.position, parentTile.gameObject.transform.rotation);
         objectToBuild = null;

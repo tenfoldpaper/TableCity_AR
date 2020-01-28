@@ -6,5 +6,6 @@ using UnityEngine;
 public class Blueprint
 {
     public GameObject prefab;
+    public GameObject status;
     public int cost;
 }
