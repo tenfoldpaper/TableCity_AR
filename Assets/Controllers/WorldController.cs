@@ -103,6 +103,7 @@ public class WorldController : MonoBehaviour
     }
     public GameObject WrapInstantiate(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null)
     {
+
         if(parent != null)
             return Instantiate(prefab, position, rotation, parent); 
         else
