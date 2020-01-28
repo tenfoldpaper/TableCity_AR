@@ -17,6 +17,8 @@ public class WorldController : MonoBehaviour
     public Sprite waterSprite;
     public Sprite electricitySprite;
 
+    public List<Tile> powerTiles;
+    public List<Tile> waterTiles;
 
     Dictionary<Furniture, GameObject> furnitureGameObjectMap;
     Dictionary<string, Sprite> furnitureSprites;
@@ -71,6 +73,7 @@ public class WorldController : MonoBehaviour
                 tile_go.transform.SetParent(this.transform, false);
                 // Add a sprite renderer, but don't set a sprite since they are all empty
                 SpriteRenderer tile_sr = tile_go.AddComponent<SpriteRenderer>();
+                tile_go.GetComponent<SpriteRenderer>().sprite = floorSprite;
                 BoxCollider tile_bc = tile_go.AddComponent<BoxCollider>();
                 tile_bc.center = bc_center;
                 tile_bc.size = new Vector3(1, 1, 0.01f);
@@ -83,8 +86,6 @@ public class WorldController : MonoBehaviour
             }
         }
 
-        // Shake things up, for testing.
-        world.RandomizeTiles();
     }
     public GameObject WrapInstantiate(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null)
     {
@@ -185,7 +186,7 @@ public class WorldController : MonoBehaviour
     // This function should be called automatically whenever a tile's type gets changed.
     void OnTileTypeChanged(Tile tile_data)
     {
-
+        //Debug.Log("Changing tile type");
 		GameObject tile_go = tile_data.gameObject;
 
         if (tile_go == null)
@@ -197,6 +198,8 @@ public class WorldController : MonoBehaviour
         if (tile_data.Type == Tile.TileType.Floor)
         {
             tile_go.GetComponent<SpriteRenderer>().sprite = floorSprite;
+            tile_data.maxPopulation = 0;
+            
         }
         else if (tile_data.Type == Tile.TileType.Empty)
         {
@@ -205,10 +208,33 @@ public class WorldController : MonoBehaviour
         else if (tile_data.Type == Tile.TileType.Road)
         {
             tile_go.GetComponent<SpriteRenderer>().sprite = roadSprite;
+            tile_data.setTileData(0, 0, 0, 0, 0, 0);
         }
-        else
+        else if (tile_data.Type == Tile.TileType.Residential)
         {
-            tile_go.GetComponent<SpriteRenderer>().sprite = floorSprite;
+            tile_go.GetComponent<SpriteRenderer>().sprite = residentialSprite;
+            tile_data.setTileData(100, 1, 1, 0, 0, 0);
+        }
+        else if (tile_data.Type == Tile.TileType.Industrial)
+        {
+            tile_go.GetComponent<SpriteRenderer>().sprite = industrialSprite;
+
+            tile_data.setTileData(0, 3, 2, 0, 0, 0);
+        }
+        else if (tile_data.Type == Tile.TileType.Entertainment)
+        {
+            tile_go.GetComponent<SpriteRenderer>().sprite = entertainmentSprite;
+            tile_data.setTileData(0, 2, 1, 0, 0, 0);
+        }
+        else if (tile_data.Type == Tile.TileType.Water)
+        {
+            tile_go.GetComponent<SpriteRenderer>().sprite = waterSprite;
+            tile_data.setTileData(0, 2, 0, 0, 0, 50);
+        }
+        else if (tile_data.Type == Tile.TileType.Electricity)
+        {
+            tile_go.GetComponent<SpriteRenderer>().sprite = electricitySprite;
+            tile_data.setTileData(0, 0, 0, 0, 50, 0);
         }
     }
 
@@ -334,49 +360,105 @@ public class WorldController : MonoBehaviour
         // 5 Manhattan distance radius.
 
         // resourceType: 0 = water, 1 = electricity
-
+        Debug.Log("Updating tile resources");
+        int currentResource;
+        if (!resourceType)
+        {
+            currentResource = epicentre.waterResources;
+            Debug.Log("Water");
+            
+        }
+        else
+        {
+            currentResource = epicentre.electricityResources;
+            Debug.Log("Power");
+        }
+        
         for(int i = -5; i < 6; i++) // X axis
         {
             for(int j = -5; j < 6; j++) // Y axis
             {
                 int currentX = epicentre.X + i;
                 int currentY = epicentre.Y + j;
-
                 // Don't accidentally get tiles that are out of range!
                 if(currentX > worldX - 1)
                 {
-                    break;
-                    currentX = worldX;
+                    continue;
                 }
                 if(currentY > worldY - 1)
                 {
-                    break;
-                    currentY = worldY;
+                    continue;
                 }
                 if(currentX < 0)
                 {
-                    break;
-                    currentX = 0;
+                    continue;
                 }
                 if(currentY < 0)
                 {
-                    break;
-                    currentY = 0;
+                    continue;
                 }
 
-                Debug.Log(currentX.ToString() + " " + currentY.ToString());
                 Tile currentTile = world.GetTileAt(currentX, currentY);
-                if (resourceType)
+
+                if (resourceType && currentTile.requiresPower())
                 {
-                    currentTile.electricity = resourceBool;
-                    currentTile.happiness += 5;
+                    if (currentResource >= currentTile.needPower && !currentTile.electricity)
+                    {
+                        currentTile.electricity = resourceBool;
+                        //currentTile.hasPower = currentTile.needPower;
+                        currentTile.increaseHappiness(5);
+                        currentResource -= currentTile.needPower;
+                        Debug.Log("Updated the resources on this tile");
+                        Debug.Log(currentX.ToString() + " " + currentY.ToString());
+                    }
+                    else if(currentResource < currentTile.needPower)
+                    {
+                        Debug.Log("Not enough power!");
+                        //TODO: Would be nice to render something here as a visual indicator above the building.
+                    }
+                    else
+                    {
+                        Debug.Log("This tile doesn't need water");
+                    }
+                }
+                else if (currentTile.requiresWater())
+                {
+                    if (currentResource >= currentTile.needWater && !currentTile.water)
+                    {
+                        currentTile.water = resourceBool;
+                        //currentTile.hasWater = currentTile.needWater;
+                        currentTile.increaseHappiness(5);
+                        currentResource -= currentTile.needWater;
+                        Debug.Log("Updated the resources on this tile");
+                        Debug.Log(currentX.ToString() + " " + currentY.ToString());
+                    }
+                    else if (currentResource < currentTile.needWater)
+                    {
+                        Debug.Log("Not enough water!");
+                        //TODO: Render a visual indicator for the lack
+                    }
+                    else
+                    {
+                        Debug.Log("This tile doesn't need water");
+                    }
                 }
                 else
                 {
-                    currentTile.water = resourceBool;
-                    currentTile.happiness += 5;
+                    //Debug.Log("This tile doesn't require water or power");
+                    //Debug.Log(currentX.ToString() + " " + currentY.ToString());
                 }
             }
+        }
+    
+        if (!resourceType)
+        {
+            epicentre.waterResources = currentResource;
+            Debug.Log("Remaining water resources: " + currentResource.ToString());
+        }
+        else
+        {
+            epicentre.electricityResources = currentResource;
+            Debug.Log("Remaining electricity resources: " + currentResource.ToString());
         }
 
         CalculateTotalHappinessRatio();
@@ -425,23 +507,19 @@ public class WorldController : MonoBehaviour
                 int currentY = epicentre.Y + j;
                 if (currentX > worldX - 1)
                 {
-                    break;
-                    currentX = worldX;
+                    continue;
                 }
                 if (currentY > worldY - 1)
                 {
-                    break;
-                    currentY = worldY;
+                    continue;
                 }
                 if (currentX < 0)
                 {
-                    break;
-                    currentX = 0;
+                    continue;
                 }
                 if (currentY < 0)
                 {
-                    break;
-                    currentY = 0;
+                    continue;
                 }
                 Tile currentTile = world.GetTileAt(currentX, currentY);
                 
@@ -499,7 +577,7 @@ public class WorldController : MonoBehaviour
         }
         else
         {
-            CurrentHappinessRatio = (float)(totalHappiness / (residentialCount * 20));
+            CurrentHappinessRatio = (totalHappiness / ((float)residentialCount * 20));
         }
         Debug.Log("Current HRatio: " + CurrentHappinessRatio.ToString());
     }

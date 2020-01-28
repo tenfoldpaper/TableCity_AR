@@ -9,21 +9,45 @@ public class Tile {
 
     public enum TileType { Empty, Floor, Road, Residential, Industrial, Entertainment, Water, Electricity };
                            //0      1      2        3           4             5          6          7
-    //Action<int, string, float> someFunction;
-    LooseObject looseObject;
-    InstalledObject installedObject;
+    
     public Furniture furniture{ get; protected set; }
     public World world { get; protected set; }
+
+    // Local XY Coordinates
     public int X { get; protected set; }
     public int Y { get; protected set; }
 
     public GameObject gameObject;
     
+    // Does this tile rest within the range of a power plant/water plant?
     public bool electricity { get; set; }
     public bool water { get; set; }
+
     public int level;
     public int happiness { get; set; }
+    public int population { get; set; }
+    public int maxPopulation { get; set; }
 
+    public int electricityResources;
+    public int waterResources;
+
+    // Tiles that are occupied with residential/industrial/entertainment buildings require both power and water. 
+    public int needPower;
+    public int hasPower;
+    public int needWater;
+    public int hasWater;
+
+    public void setTileData(int maxPop = 0, int nPower = 0, int nWater = 0, int nPop = 0, int nElecRes = 0, int nWaterRes = 0)
+    {
+        this.maxPopulation = maxPop;
+        this.needPower = nPower;
+        this.needWater = nWater;
+        this.population = nPop;
+        this.electricityResources = nElecRes;
+        this.waterResources = nWaterRes;
+    }
+
+    
     bool highlightedValue = false;
     public bool highlighted
     {
@@ -230,5 +254,26 @@ public class Tile {
         return false;
     }
 
+    public bool requiresWater()
+    {
+        if (this.Type == TileType.Entertainment || this.Type == TileType.Industrial || this.Type == TileType.Residential)
+        {
+            return true;
+        }
+        else return false;
+    }
 
+    public bool requiresPower()
+    {
+        if (this.Type == TileType.Entertainment || this.Type == TileType.Industrial || this.Type == TileType.Residential || this.Type == TileType.Water)
+        {
+            return true;
+        }
+        else return false;
+    }
+
+    public void increaseHappiness(int nhappy)
+    {
+        this.happiness = Mathf.Min(this.happiness + nhappy, 10);
+    }
 }
