@@ -113,22 +113,34 @@ public class BuildManager
         if (objectToBuild == watertower)
         {
             WorldController.Instance.playerstats.water += 1;
-            Debug.Log("Current water tower count: " + WorldController.Instance.playerstats.water);
             WorldController.Instance.world.PlaceFurniture("Resource", parentTile);
             parentTile.Type = Tile.TileType.Water;
             WorldController.Instance.UpdateTileResources(parentTile, false, true);
+            WorldController.Instance.waterTiles.Add(parentTile);
+            Debug.Log("Current water tower count: " + WorldController.Instance.playerstats.water);
         }
         if (objectToBuild == powerplant)
         {
             WorldController.Instance.playerstats.electricity += 1;
-            Debug.Log("Current power plant count: " + WorldController.Instance.playerstats.electricity);
             WorldController.Instance.world.PlaceFurniture("Resource", parentTile);
             parentTile.Type = Tile.TileType.Electricity;
             WorldController.Instance.UpdateTileResources(parentTile, true, true);
+            WorldController.Instance.powerTiles.Add(parentTile);
+            Debug.Log("Current power plant count: " + WorldController.Instance.playerstats.electricity);
         }
         Debug.Log("Check?");
         WorldController.Instance.UpdateTileHappiness(parentTile, 1);
         Debug.Log("Object built! Money left: " + WorldController.Instance.playerstats.Money.ToString());
+        foreach (var resourceTile in WorldController.Instance.waterTiles)
+        {
+            WorldController.Instance.UpdateTileResources(resourceTile, false, true);
+            Debug.Log("Looping through water");
+        }
+        foreach (var resourceTile in WorldController.Instance.powerTiles)
+        {
+            WorldController.Instance.UpdateTileResources(resourceTile, true, true);
+            Debug.Log("Looping through power");
+        }
         GameObject go = (GameObject)WorldController.Instance.WrapInstantiate(objectToBuild.prefab, parentTile.gameObject.transform.position, parentTile.gameObject.transform.rotation);
         objectToBuild = null;
     }

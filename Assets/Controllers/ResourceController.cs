@@ -41,7 +41,7 @@ public class ResourceController : MonoBehaviour
             + (15 * WorldController.Instance.playerstats.industrialCount) 
             + ((int)(WorldController.Instance.CurrentHappinessRatio * 8.0f) * WorldController.Instance.playerstats.residentialCount);
         WorldController.Instance.playerstats.Money -= (15 * WorldController.Instance.playerstats.electricity) + (10 * WorldController.Instance.playerstats.water);
-        Debug.Log("Current money: " + WorldController.Instance.playerstats.Money.ToString());
+        //Debug.Log("Current money: " + WorldController.Instance.playerstats.Money.ToString());
         
     }
 
@@ -52,4 +52,5 @@ public class ResourceController : MonoBehaviour
         //Debug.Log(moneyScale);
         moneyObject.transform.localScale = new Vector3(moneyScale, moneyScale, moneyScale);
     }
+
 }

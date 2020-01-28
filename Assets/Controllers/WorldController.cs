@@ -17,6 +17,8 @@ public class WorldController : MonoBehaviour
     public Sprite waterSprite;
     public Sprite electricitySprite;
 
+    public List<Tile> powerTiles;
+    public List<Tile> waterTiles;
 
     Dictionary<Furniture, GameObject> furnitureGameObjectMap;
     Dictionary<string, Sprite> furnitureSprites;
@@ -183,7 +185,7 @@ public class WorldController : MonoBehaviour
     // This function should be called automatically whenever a tile's type gets changed.
     void OnTileTypeChanged(Tile tile_data)
     {
-        Debug.Log("Changing tile type");
+        //Debug.Log("Changing tile type");
 		GameObject tile_go = tile_data.gameObject;
 
         if (tile_go == null)
@@ -362,79 +364,91 @@ public class WorldController : MonoBehaviour
         if (!resourceType)
         {
             currentResource = epicentre.waterResources;
+            Debug.Log("Water");
+            
         }
         else
         {
             currentResource = epicentre.electricityResources;
+            Debug.Log("Power");
         }
-        while(currentResource > 0) { 
-            for(int i = -5; i < 6; i++) // X axis
+        
+        for(int i = -5; i < 6; i++) // X axis
+        {
+            for(int j = -5; j < 6; j++) // Y axis
             {
-                for(int j = -5; j < 6; j++) // Y axis
+                int currentX = epicentre.X + i;
+                int currentY = epicentre.Y + j;
+                // Don't accidentally get tiles that are out of range!
+                if(currentX > worldX - 1)
                 {
-                    int currentX = epicentre.X + i;
-                    int currentY = epicentre.Y + j;
+                    continue;
+                }
+                if(currentY > worldY - 1)
+                {
+                    continue;
+                }
+                if(currentX < 0)
+                {
+                    continue;
+                }
+                if(currentY < 0)
+                {
+                    continue;
+                }
 
-                    // Don't accidentally get tiles that are out of range!
-                    if(currentX > worldX - 1)
-                    {
-                        continue;
-                    }
-                    if(currentY > worldY - 1)
-                    {
-                        continue;
-                    }
-                    if(currentX < 0)
-                    {
-                        continue;
-                    }
-                    if(currentY < 0)
-                    {
-                        continue;
-                    }
+                Tile currentTile = world.GetTileAt(currentX, currentY);
 
-                    Debug.Log(currentX.ToString() + " " + currentY.ToString());
-                    Tile currentTile = world.GetTileAt(currentX, currentY);
-                    
-                    if (resourceType && currentTile.requiresPower())
+                if (resourceType && currentTile.requiresPower())
+                {
+                    if (currentResource >= currentTile.needPower && !currentTile.electricity)
                     {
-                        if(currentResource >= currentTile.needPower && !currentTile.electricity)
-                        {
-                            currentTile.electricity = resourceBool;
-                            currentTile.hasPower = currentTile.needPower;
-                            currentTile.increaseHappiness(5);
-                            currentResource -= currentTile.needPower;
-                        }
-                        else
-                        {
-                            
-                            Debug.Log("Not enough power!");
-                            //TODO: Would be nice to render something here as a visual indicator above the building.
-                        }
+                        currentTile.electricity = resourceBool;
+                        //currentTile.hasPower = currentTile.needPower;
+                        currentTile.increaseHappiness(5);
+                        currentResource -= currentTile.needPower;
+                        Debug.Log("Updated the resources on this tile");
+                        Debug.Log(currentX.ToString() + " " + currentY.ToString());
                     }
-                    else if(currentTile.requiresWater())
+                    else if(currentResource < currentTile.needPower)
                     {
-                        if(currentResource >= currentTile.needWater && !currentTile.water)
-                        {
-                            currentTile.water = resourceBool;
-                            currentTile.hasWater = currentTile.needWater;
-                            currentTile.increaseHappiness(5);
-                            currentResource -= currentTile.needWater;
-                        }
-                        else
-                        {
-                            Debug.Log("Not enough water!");
-                            //TODO: Render a visual indicator for the lack
-                        }
+                        Debug.Log("Not enough power!");
+                        //TODO: Would be nice to render something here as a visual indicator above the building.
                     }
                     else
                     {
-                        Debug.Log("This tile doesn't require water or power");
+                        Debug.Log("This tile doesn't need water");
+                    }
+                }
+                else if (currentTile.requiresWater())
+                {
+                    if (currentResource >= currentTile.needWater && !currentTile.water)
+                    {
+                        currentTile.water = resourceBool;
+                        //currentTile.hasWater = currentTile.needWater;
+                        currentTile.increaseHappiness(5);
+                        currentResource -= currentTile.needWater;
+                        Debug.Log("Updated the resources on this tile");
                         Debug.Log(currentX.ToString() + " " + currentY.ToString());
                     }
+                    else if (currentResource < currentTile.needWater)
+                    {
+                        Debug.Log("Not enough water!");
+                        //TODO: Render a visual indicator for the lack
+                    }
+                    else
+                    {
+                        Debug.Log("This tile doesn't need water");
+                    }
+                }
+                else
+                {
+                    //Debug.Log("This tile doesn't require water or power");
+                    //Debug.Log(currentX.ToString() + " " + currentY.ToString());
                 }
             }
         }
+    
         if (!resourceType)
         {
             epicentre.waterResources = currentResource;
@@ -562,7 +576,7 @@ public class WorldController : MonoBehaviour
         }
         else
         {
-            CurrentHappinessRatio = ((float)totalHappiness / ((float)residentialCount * 20));
+            CurrentHappinessRatio = (totalHappiness / ((float)residentialCount * 20));
         }
         Debug.Log("Current HRatio: " + CurrentHappinessRatio.ToString());
     }
