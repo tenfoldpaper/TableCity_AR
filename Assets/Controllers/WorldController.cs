@@ -58,6 +58,11 @@ public class WorldController : MonoBehaviour
         // Instantiate our dictionary that tracks which GameObject is rendering which Tile data.
         furnitureGameObjectMap = new Dictionary<Furniture, GameObject>();
 
+        Mesh waterMesh = Resources.Load<Mesh>("Status/water");
+        Mesh powerMesh = Resources.Load<Mesh>("Status/lightning");
+        Mesh happyMesh = Resources.Load<Mesh>("Status/heart");
+        Mesh populMesh = Resources.Load<Mesh>("Status/pop");
+        
         // Create a GameObject for each of our tiles, so they show visually. (and redunt reduntantly)
         for (int x = 0; x < world.Width; x++)
         {
@@ -82,14 +87,54 @@ public class WorldController : MonoBehaviour
 
 
                 // Add the status game objects, then disable them 
-                tile_data.waterStatus = Resources.Load("Status/water") as GameObject;
-                tile_data.waterStatus.transform.position = tile_go.transform.position + (tile_go.transform.rotation * new Vector3(0, 0, -3));
-                tile_data.waterStatus.transform.rotation = tile_go.transform.rotation * Quaternion.Euler(90, 0, 0);
-                tile_data.waterStatus.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-                //tile_data.waterStatus.transform.parent = tile_go.transform;
+                tile_data.waterStatus = new GameObject();
+                tile_data.waterStatus.transform.parent = tile_go.transform;
+                MeshRenderer wmr = tile_data.waterStatus.AddComponent<MeshRenderer>();
+                wmr.material = Resources.Load<Material>("Status/Materials/waterMaterial");
+                MeshFilter wmf = tile_data.waterStatus.AddComponent<MeshFilter>();
+                wmf.mesh = waterMesh;
+                tile_data.waterStatus.transform.position = tile_go.transform.position + (tile_go.transform.rotation * new Vector3(0.33f, 0.33f, -3));
+                tile_data.waterStatus.transform.rotation = tile_go.transform.rotation * Quaternion.Euler(180, 0, 270);
+                tile_data.waterStatus.transform.localScale = new Vector3(5f, 5f, 5f);
                 tile_data.waterStatus.name = (tile_go.name + "WaterStatus");
-                WrapInstantiate(tile_data.waterStatus, tile_data.waterStatus.transform.position, tile_data.waterStatus.transform.rotation);
-                tile_data.waterStatus.SetActive(true);
+                tile_data.waterStatus.SetActive(false);
+
+                tile_data.powerStatus = new GameObject();
+                tile_data.powerStatus.transform.parent = tile_go.transform;
+                MeshRenderer pmr = tile_data.powerStatus.AddComponent<MeshRenderer>();
+                pmr.material = Resources.Load<Material>("Status/Materials/powerMaterial");
+                MeshFilter pmf = tile_data.powerStatus.AddComponent<MeshFilter>();
+                pmf.mesh = powerMesh;
+                tile_data.powerStatus.transform.position = tile_go.transform.position + (tile_go.transform.rotation * new Vector3(0.66f, 0.33f, -3));
+                tile_data.powerStatus.transform.rotation = tile_go.transform.rotation * Quaternion.Euler(180, 0, 270);
+                tile_data.powerStatus.transform.localScale = new Vector3(5f, 5f, 5f);
+                tile_data.powerStatus.name = (tile_go.name + "PowerStatus");
+                tile_data.powerStatus.SetActive(false);
+
+                tile_data.happyStatus = new GameObject();
+                tile_data.happyStatus.transform.parent = tile_go.transform;
+                MeshRenderer hmr = tile_data.happyStatus.AddComponent<MeshRenderer>();
+                hmr.material = Resources.Load<Material>("Status/Materials/happyMaterial");
+                MeshFilter hmf = tile_data.happyStatus.AddComponent<MeshFilter>();
+                hmf.mesh = happyMesh;
+                tile_data.happyStatus.transform.position = tile_go.transform.position + (tile_go.transform.rotation * new Vector3(0.33f, 0.66f, -3));
+                tile_data.happyStatus.transform.rotation = tile_go.transform.rotation * Quaternion.Euler(180, 0, 0);
+                tile_data.happyStatus.transform.localScale = new Vector3(5f, 5f, 5f);
+                tile_data.happyStatus.name = (tile_go.name + "HappyStatus");
+                tile_data.happyStatus.SetActive(false);
+
+                tile_data.populStatus = new GameObject();
+                tile_data.populStatus.transform.parent = tile_go.transform;
+                MeshRenderer lmr = tile_data.populStatus.AddComponent<MeshRenderer>();
+                lmr.material = Resources.Load<Material>("Status/Materials/populMaterial");
+                MeshFilter lmf = tile_data.populStatus.AddComponent<MeshFilter>();
+                lmf.mesh = populMesh;
+                tile_data.populStatus.transform.position = tile_go.transform.position + (tile_go.transform.rotation * new Vector3(0.66f, 0.66f, -3));
+                tile_data.populStatus.transform.rotation = tile_go.transform.rotation * Quaternion.Euler(180, 0, 90);
+                tile_data.populStatus.transform.localScale = new Vector3(5f, 5f, 5f);
+                tile_data.populStatus.name = (tile_go.name + "PopulStatus");
+                tile_data.populStatus.SetActive(false);
+
 
                 tile_bc.center = bc_center;
                 tile_bc.size = new Vector3(1, 1, 0.01f);

@@ -17,6 +17,9 @@ public class ResourceController : MonoBehaviour
         InvokeRepeating("UpdatePlayerMoney", 1.0f, 5.0f);
         InvokeRepeating("UpdateResourceScale", 0f, 0.5f);
         InvokeRepeating("UpdateHappiness", 1.0f, 2.0f);
+        InvokeRepeating("UpdateHappinessScale", 1.0f, 0.5f);
+        InvokeRepeating("UpdateWaterStatus", 1.0f, 0.5f);
+        InvokeRepeating("UpdatePowerStatus", 1.0f, 0.5f);
         this.transform.position = this.gameObject.transform.parent.position;
         moneyObject = this.transform.Find("moneyMeshTemp").gameObject;
         electObject = this.transform.Find("electMeshTemp").gameObject;
@@ -66,4 +69,64 @@ public class ResourceController : MonoBehaviour
         }
     }
 
+    void UpdateHappinessScale()
+    {
+        foreach(var t in WorldController.Instance.allTiles)
+        {
+            if(t.Type == Tile.TileType.Residential)
+            {
+                t.happyStatus.SetActive(true);
+                if(t.happiness == 0)
+                {
+                    t.happyStatus.transform.localScale = new Vector3(1, 1, 1);
+
+                }
+                else
+                {
+                    float happyScale = ((float)t.happiness / 20) * 5;
+                    t.happyStatus.transform.localScale = new Vector3(happyScale, happyScale, happyScale);
+                }
+            }
+            else
+            {
+                //t.happyStatus.SetActive(false);
+            }
+        }
+    }
+
+    void UpdateWaterStatus()
+    {
+        foreach(var t in WorldController.Instance.allTiles)
+        {
+            if(t.Type == Tile.TileType.Residential || t.Type == Tile.TileType.Entertainment || t.Type == Tile.TileType.Industrial)
+            {
+                if (!t.water) //if water is not toggled, display water status
+                {
+                    t.waterStatus.SetActive(true);
+                }
+                else
+                {
+                    t.waterStatus.SetActive(false);
+                }
+            }
+        }
+    }
+
+    void UpdatePowerStatus()
+    {
+        foreach (var t in WorldController.Instance.allTiles)
+        {
+            if (t.Type == Tile.TileType.Residential || t.Type == Tile.TileType.Entertainment || t.Type == Tile.TileType.Industrial || t.Type == Tile.TileType.Water)
+            {
+                if (!t.electricity) //if water is not toggled, display water status
+                {
+                    t.powerStatus.SetActive(true);
+                }
+                else
+                {
+                    t.powerStatus.SetActive(false);
+                }
+            }
+        }
+    }
 }
