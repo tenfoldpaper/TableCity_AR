@@ -40,9 +40,9 @@ public class BuildManager
         }
         if (residental == null)
         {
+            residental = new Blueprint();
             GameObject happiness = Resources.Load("Status/happiness") as GameObject;
             residental.status = happiness;
-            residental = new Blueprint();
             residental.cost = 0;
             residental.number = 3;
             residental.prefab = new GameObject[3];
@@ -112,7 +112,7 @@ public class BuildManager
         if (objectToBuild == residental)
         {
             WorldController.Instance.playerstats.residentialCount += 1;
-            Debug.Log("Current residential count: " + WorldController.Instance.playerstats.residentialCount);
+            Debug.Log("Current residential count: " + WorldController.Instance.playerstats.residentialCount.ToString() + " Happiness: " + parentTile.happiness.ToString() );
             WorldController.Instance.world.PlaceFurniture("Building", parentTile);
             GameObject happyObject = (GameObject)WorldController.Instance.WrapInstantiate(objectToBuild.status, parentTile.gameObject.transform.position, parentTile.gameObject.transform.rotation);
             happyObject.transform.position = happyObject.transform.rotation * new Vector3(0, 1, 0);
@@ -144,7 +144,6 @@ public class BuildManager
             WorldController.Instance.powerTiles.Add(parentTile);
             Debug.Log("Current power plant count: " + WorldController.Instance.playerstats.electricity);
         }
-        Debug.Log("Check?");
         WorldController.Instance.UpdateTileHappiness(parentTile, 1);
         Debug.Log("Object built! Money left: " + WorldController.Instance.playerstats.Money.ToString());
         if (WorldController.Instance.waterTiles.Count > 0)
@@ -164,6 +163,7 @@ public class BuildManager
             } 
         }
         GameObject go = (GameObject)WorldController.Instance.WrapInstantiate(objectToBuild.Randomize(), parentTile.gameObject.transform.position, parentTile.gameObject.transform.rotation);
+        go.transform.localScale = new Vector3(0.9f, 0.9f, 0.9f);
         objectToBuild = null;
     }
 

@@ -26,6 +26,7 @@ public class Tile {
 
     public int level;
     public int happiness { get; set; }
+    private int hiddenHappiness;
     public int population { get; set; }
     public int maxPopulation { get; set; }
 
@@ -133,6 +134,7 @@ public class Tile {
         this.X = x;
         this.Y = y;
         this.happiness = 0;
+        this.hiddenHappiness = 0;
     }
     public bool isOccupied()
     {
@@ -275,6 +277,40 @@ public class Tile {
 
     public void increaseHappiness(int nhappy)
     {
-        this.happiness = Mathf.Min(this.happiness + nhappy, 10);
+        this.hiddenHappiness = Mathf.Min(this.hiddenHappiness + nhappy, 20);
+        Debug.Log(this.hiddenHappiness);
+        if(!this.electricity || !this.water)
+        {
+            this.happiness = 0;
+        }
+        else
+        {
+            this.happiness = this.hiddenHappiness;
+        }
+        
+    }
+
+    public void decreaseHappiness(int nhappy)
+    {
+        this.hiddenHappiness = Mathf.Max(this.hiddenHappiness - nhappy, 0);
+        this.happiness = Mathf.Max(this.happiness - nhappy, 0);
+    }
+
+    public void refreshHappiness()
+    {
+        if(!this.electricity || !this.water)
+        {
+            this.happiness = 0;
+        }
+        else
+        {
+            this.happiness = this.hiddenHappiness;
+        }
+        Debug.Log(this.happiness);
+    }
+
+    public void printTileStats()
+    {
+        Debug.Log("Coord: " + this.X + " " + this.Y + " EP: " + this.electricity.ToString() + this.water.ToString() + " HPN: " + this.happiness.ToString());
     }
 }

@@ -19,6 +19,7 @@ public class WorldController : MonoBehaviour
 
     public List<Tile> powerTiles;
     public List<Tile> waterTiles;
+    public List<Tile> allTiles;
 
     Dictionary<Furniture, GameObject> furnitureGameObjectMap;
     Dictionary<string, Sprite> furnitureSprites;
@@ -46,6 +47,7 @@ public class WorldController : MonoBehaviour
         Instance = this;
         powerTiles = new List<Tile>();
         waterTiles = new List<Tile>();
+        allTiles = new List<Tile>();
         // Create a world with Empty tiles
         world = new World(worldX, worldY);
         playerstats = new PlayerStats();
@@ -81,8 +83,8 @@ public class WorldController : MonoBehaviour
 
                 // Add the status game objects, then disable them 
                 tile_data.waterStatus = Resources.Load("Status/water") as GameObject;
-                tile_data.waterStatus.transform.position = tile_go.transform.position + (tile_go.transform.rotation * new Vector3(0, 0, -1));
-                tile_data.waterStatus.transform.rotation = tile_go.transform.rotation * Quaternion.Euler(0, 90, 0);
+                tile_data.waterStatus.transform.position = tile_go.transform.position + (tile_go.transform.rotation * new Vector3(0, 0, -3));
+                tile_data.waterStatus.transform.rotation = tile_go.transform.rotation * Quaternion.Euler(90, 0, 0);
                 tile_data.waterStatus.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
                 //tile_data.waterStatus.transform.parent = tile_go.transform;
                 tile_data.waterStatus.name = (tile_go.name + "WaterStatus");
@@ -97,6 +99,7 @@ public class WorldController : MonoBehaviour
                 // Register our callback so that our GameObject gets updated whenever
                 // the tile's type changes.
                 tile_data.RegisterTileTypeChangedCallback(OnTileTypeChanged);
+                this.allTiles.Add(tile_data);
             }
         }
 
@@ -109,6 +112,7 @@ public class WorldController : MonoBehaviour
         else
             return Instantiate(prefab, position, rotation, this.transform);
     }
+    
     void LoadSprites()
     {
         furnitureSprites = new Dictionary<string, Sprite>();
@@ -432,7 +436,7 @@ public class WorldController : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log("This tile doesn't need water");
+                        Debug.Log("This tile doesn't need power");
                     }
                 }
                 else if (currentTile.requiresWater())
@@ -467,17 +471,16 @@ public class WorldController : MonoBehaviour
         if (!resourceType)
         {
             epicentre.waterResources = currentResource;
-            Debug.Log("Remaining water resources: " + currentResource.ToString());
+            //Debug.Log("Remaining water resources: " + currentResource.ToString());
         }
         else
         {
             epicentre.electricityResources = currentResource;
-            Debug.Log("Remaining electricity resources: " + currentResource.ToString());
+            //Debug.Log("Remaining electricity resources: " + currentResource.ToString());
         }
 
-        CalculateTotalHappinessRatio();
 
-        Debug.Log("Tile resource has been updated.");
+        //Debug.Log("Tile resource has been updated.");
     }
 
 
@@ -539,15 +542,18 @@ public class WorldController : MonoBehaviour
                 
                 if (happinessType == Tile.TileType.Electricity)
                 {
-                    currentTile.happiness -= happinessSign * happinessArrayP[ManhattanDistance(currentTile, epicentre)];
+                    currentTile.decreaseHappiness(happinessArrayP[ManhattanDistance(currentTile, epicentre)]);
+                    //currentTile.happiness -= happinessSign * happinessArrayP[ManhattanDistance(currentTile, epicentre)];
                 }
                 else if (happinessType == Tile.TileType.Entertainment)
                 {
-                    currentTile.happiness += happinessSign * happinessArrayE[ManhattanDistance(currentTile, epicentre)];
+                    currentTile.increaseHappiness(happinessArrayE[ManhattanDistance(currentTile, epicentre)]);
+                    //currentTile.happiness += happinessSign * happinessArrayE[ManhattanDistance(currentTile, epicentre)];
                 }
                 else if (happinessType == Tile.TileType.Industrial)
                 {
-                    currentTile.happiness += happinessSign * happinessArrayI[ManhattanDistance(currentTile, epicentre)];
+                    currentTile.increaseHappiness(happinessArrayI[ManhattanDistance(currentTile, epicentre)]);
+                    //currentTile.happiness += happinessSign * happinessArrayI[ManhattanDistance(currentTile, epicentre)];
                 }
             }
         }
@@ -574,13 +580,7 @@ public class WorldController : MonoBehaviour
                 Tile currentTile = world.GetTileAt(i, j);
                 if(currentTile.Type == Tile.TileType.Residential)
                 {
-                    int currentHappiness = currentTile.happiness;
-                    if(currentHappiness > MaxHappiness)
-                    {
-                        currentHappiness = MaxHappiness;
-                    }
-
-                    totalHappiness += currentHappiness;
+                    totalHappiness += currentTile.happiness;
                     residentialCount += 1;
                 }
             }

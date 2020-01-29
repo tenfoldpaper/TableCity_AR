@@ -16,6 +16,7 @@ public class ResourceController : MonoBehaviour
         Debug.Log("ResourceController initialized");
         InvokeRepeating("UpdatePlayerMoney", 1.0f, 5.0f);
         InvokeRepeating("UpdateResourceScale", 0f, 0.5f);
+        InvokeRepeating("UpdateHappiness", 1.0f, 2.0f);
         this.transform.position = this.gameObject.transform.parent.position;
         moneyObject = this.transform.Find("moneyMeshTemp").gameObject;
         electObject = this.transform.Find("electMeshTemp").gameObject;
@@ -51,6 +52,18 @@ public class ResourceController : MonoBehaviour
         
         //Debug.Log(moneyScale);
         moneyObject.transform.localScale = new Vector3(moneyScale, moneyScale, moneyScale);
+    }
+
+    void UpdateHappiness()
+    {
+        foreach(var t in WorldController.Instance.allTiles)
+        {
+            if(t.Type != Tile.TileType.Empty && t.Type != Tile.TileType.Floor && t.Type != Tile.TileType.Road)
+            {
+                t.refreshHappiness();
+                t.printTileStats();
+            }
+        }
     }
 
 }
