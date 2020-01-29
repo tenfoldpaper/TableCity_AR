@@ -62,7 +62,7 @@ public class WorldController : MonoBehaviour
         Mesh powerMesh = Resources.Load<Mesh>("Status/lightning");
         Mesh happyMesh = Resources.Load<Mesh>("Status/heart");
         Mesh populMesh = Resources.Load<Mesh>("Status/pop");
-        
+
         // Create a GameObject for each of our tiles, so they show visually. (and redunt reduntantly)
         for (int x = 0; x < world.Width; x++)
         {
@@ -93,9 +93,11 @@ public class WorldController : MonoBehaviour
                 wmr.material = Resources.Load<Material>("Status/Materials/waterMaterial");
                 MeshFilter wmf = tile_data.waterStatus.AddComponent<MeshFilter>();
                 wmf.mesh = waterMesh;
-                tile_data.waterStatus.transform.position = tile_go.transform.position + (tile_go.transform.rotation * new Vector3(0.33f, 0.33f, -3));
+                Animator wanimator = tile_data.waterStatus.AddComponent<Animator>();
+                wanimator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Animations/Tile_0_0WaterStatus");
+                tile_data.waterStatus.transform.position = tile_go.transform.position + (tile_go.transform.rotation * new Vector3(0.33f, 0.33f, -2.91f));
                 tile_data.waterStatus.transform.rotation = tile_go.transform.rotation * Quaternion.Euler(180, 0, 270);
-                tile_data.waterStatus.transform.localScale = new Vector3(5f, 5f, 5f);
+                tile_data.waterStatus.transform.localScale = new Vector3(8f, 8f, 9f);
                 tile_data.waterStatus.name = (tile_go.name + "WaterStatus");
                 tile_data.waterStatus.SetActive(false);
 
@@ -105,6 +107,8 @@ public class WorldController : MonoBehaviour
                 pmr.material = Resources.Load<Material>("Status/Materials/powerMaterial");
                 MeshFilter pmf = tile_data.powerStatus.AddComponent<MeshFilter>();
                 pmf.mesh = powerMesh;
+                Animator panimator = tile_data.powerStatus.AddComponent<Animator>();
+                panimator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Animations/Tile_0_8PowerStatus");
                 tile_data.powerStatus.transform.position = tile_go.transform.position + (tile_go.transform.rotation * new Vector3(0.66f, 0.33f, -3));
                 tile_data.powerStatus.transform.rotation = tile_go.transform.rotation * Quaternion.Euler(180, 0, 270);
                 tile_data.powerStatus.transform.localScale = new Vector3(5f, 5f, 5f);
@@ -117,6 +121,9 @@ public class WorldController : MonoBehaviour
                 hmr.material = Resources.Load<Material>("Status/Materials/happyMaterial");
                 MeshFilter hmf = tile_data.happyStatus.AddComponent<MeshFilter>();
                 hmf.mesh = happyMesh;
+                Animator hanimator = tile_data.happyStatus.AddComponent<Animator>();
+                hanimator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Animations/Tile_0_0HappyStatus");
+                hanimator.SetFloat("AnimSpeed", 0.3f);
                 tile_data.happyStatus.transform.position = tile_go.transform.position + (tile_go.transform.rotation * new Vector3(0.33f, 0.66f, -3));
                 tile_data.happyStatus.transform.rotation = tile_go.transform.rotation * Quaternion.Euler(180, 0, 0);
                 tile_data.happyStatus.transform.localScale = new Vector3(5f, 5f, 5f);
@@ -129,6 +136,9 @@ public class WorldController : MonoBehaviour
                 lmr.material = Resources.Load<Material>("Status/Materials/populMaterial");
                 MeshFilter lmf = tile_data.populStatus.AddComponent<MeshFilter>();
                 lmf.mesh = populMesh;
+                Animator lanimator = tile_data.populStatus.AddComponent<Animator>();
+                lanimator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Animations/Tile_0_0HappyStatus");
+                lanimator.SetFloat("AnimSpeed", 0.3f);
                 tile_data.populStatus.transform.position = tile_go.transform.position + (tile_go.transform.rotation * new Vector3(0.66f, 0.66f, -3));
                 tile_data.populStatus.transform.rotation = tile_go.transform.rotation * Quaternion.Euler(180, 0, 90);
                 tile_data.populStatus.transform.localScale = new Vector3(5f, 5f, 5f);
@@ -537,9 +547,9 @@ public class WorldController : MonoBehaviour
         // demolishing a building.
 
         Tile.TileType happinessType = epicentre.Type;
-        int[] happinessArrayP = new int[] { 0, 10, 8, 6, 4 };
-        int[] happinessArrayE = new int[] { 0, 15, 12, 12, 10, 10, 10, 8, 8, 6, 6 };
-        int[] happinessArrayI = new int[] { 0, 10, 10, 10, 10, 8, 8, 8, 8, 6, 6 };
+        int[] happinessArrayP = new int[] { 0, 8, 6, 4, 2 };
+        int[] happinessArrayE = new int[] { 0, 10, 10, 10, 8, 8, 6, 6, 4, 4, 2 };
+        int[] happinessArrayI = new int[] { 0, 8, 8, 6, 6, 6, 6, 6, 4, 4, 4 };
 
         int affectedX = 0;
         int affectedY = 0;

@@ -234,6 +234,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1723000807230266504, guid: 14ff80094ddbf4dd099c3c57a6396b6d,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1723000807230266504, guid: 14ff80094ddbf4dd099c3c57a6396b6d,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1723000807230266504, guid: 14ff80094ddbf4dd099c3c57a6396b6d,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 14ff80094ddbf4dd099c3c57a6396b6d, type: 3}
 --- !u!4 &511238421 stripped
@@ -897,6 +912,53 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1850938732 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1489021430985381817, guid: f2883d5374c6c40a988d62052f8b9f20,
+    type: 3}
+  m_PrefabInstance: {fileID: 2061009830}
+  m_PrefabAsset: {fileID: 0}
+--- !u!102 &1850938733
+TextMesh:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1850938732}
+  m_Text: $
+  m_OffsetZ: 0
+  m_CharacterSize: 0.1
+  m_LineSpacing: 1
+  m_Anchor: 4
+  m_Alignment: 0
+  m_TabSize: 4
+  m_FontSize: 100
+  m_FontStyle: 0
+  m_RichText: 1
+  m_Font: {fileID: 12800000, guid: 770b1ebee09fd46bc8a583236024de42, type: 3}
+  m_Color:
+    serializedVersion: 2
+    rgba: 4294967295
+--- !u!95 &1850938736
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1850938732}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 2d8aa06f993e884458ee1b16acce9183, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1855555037
 GameObject:
   m_ObjectHideFlags: 0
@@ -954,6 +1016,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 380151878}
     m_Modifications:
+    - target: {fileID: 1089477394901147589, guid: f2883d5374c6c40a988d62052f8b9f20,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 770b1ebee09fd46bc8a583236024de42, type: 3}
     - target: {fileID: 1489021430985381817, guid: f2883d5374c6c40a988d62052f8b9f20,
         type: 3}
       propertyPath: m_Name
@@ -982,7 +1049,7 @@ PrefabInstance:
     - target: {fileID: 4778865104255437092, guid: f2883d5374c6c40a988d62052f8b9f20,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4778865104255437092, guid: f2883d5374c6c40a988d62052f8b9f20,
         type: 3}
@@ -992,7 +1059,7 @@ PrefabInstance:
     - target: {fileID: 4778865104255437092, guid: f2883d5374c6c40a988d62052f8b9f20,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 4778865104255437092, guid: f2883d5374c6c40a988d62052f8b9f20,
         type: 3}
@@ -1012,9 +1079,10 @@ PrefabInstance:
     - target: {fileID: 4778865104255437092, guid: f2883d5374c6c40a988d62052f8b9f20,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
+      value: 360
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7836597516220060629, guid: f2883d5374c6c40a988d62052f8b9f20, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: f2883d5374c6c40a988d62052f8b9f20, type: 3}
 --- !u!4 &2061009831 stripped
 Transform:

@@ -83,7 +83,7 @@ public class ResourceController : MonoBehaviour
                 }
                 else
                 {
-                    float happyScale = ((float)t.happiness / 20) * 5;
+                    float happyScale = ((float)t.happiness / 20) * 8;
                     t.happyStatus.transform.localScale = new Vector3(happyScale, happyScale, happyScale);
                 }
             }

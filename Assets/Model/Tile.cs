@@ -22,6 +22,8 @@ public class Tile {
     public GameObject happyStatus;
     public GameObject powerStatus;
     public GameObject populStatus;
+    bool waterAnimBool;
+    bool powerAnimBool;
     
     // Does this tile rest within the range of a power plant/water plant?
     public bool electricity { get; set; }
@@ -50,6 +52,7 @@ public class Tile {
         this.population = nPop;
         this.electricityResources = nElecRes;
         this.waterResources = nWaterRes;
+        
     }
 
     
@@ -138,6 +141,8 @@ public class Tile {
         this.Y = y;
         this.happiness = 0;
         this.hiddenHappiness = 0;
+        this.waterAnimBool = false;
+        this.powerAnimBool = false;
     }
     public bool isOccupied()
     {
@@ -316,4 +321,6 @@ public class Tile {
     {
         Debug.Log("Coord: " + this.X + " " + this.Y + " EP: " + this.electricity.ToString() + this.water.ToString() + " HPN: " + this.happiness.ToString());
     }
+
+
 }
