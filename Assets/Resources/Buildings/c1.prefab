@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 7301006847183791128}
   - component: {fileID: 7979227086564623298}
   - component: {fileID: 1936687929706753353}
-  - component: {fileID: 844758275562401675}
   m_Layer: 0
   m_Name: c1
   m_TagString: building
@@ -28,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 1283051355673404244}
   m_LocalRotation: {x: 1, y: 0, z: 0, w: 0}
   m_LocalPosition: {x: 0.5, y: 0.5, z: 0}
-  m_LocalScale: {x: 20, y: 20, z: 20}
+  m_LocalScale: {x: 20, y: 20, z: 9}
   m_Children: []
   m_Father: {fileID: 8235941707596791234}
   m_RootOrder: 0
@@ -82,23 +81,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &844758275562401675
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1283051355673404244}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d66e1b3d9035742fe83ad6500b416f95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maximumCapacity: 10
-  currentElectricity: 0
-  maximimInhabitants: 20
-  currentWorkers: 0
-  currentInhabitants: 0
 --- !u!1 &4904605262179438545
 GameObject:
   m_ObjectHideFlags: 0

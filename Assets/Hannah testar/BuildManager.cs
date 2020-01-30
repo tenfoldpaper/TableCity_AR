@@ -30,12 +30,11 @@ public class BuildManager
         {
             entertainment = new Blueprint();
             entertainment.cost = 30;
-            entertainment.number = 4;
-            entertainment.prefab = new GameObject[4];
-            entertainment.prefab[0] = Resources.Load("Buildings/a1") as GameObject;
-            entertainment.prefab[1] = Resources.Load("Buildings/a2") as GameObject;
-            entertainment.prefab[2] = Resources.Load("Buildings/a3") as GameObject;
-            entertainment.prefab[3] = Resources.Load("Buildings/a4") as GameObject;
+            entertainment.number = 3;
+            entertainment.prefab = new GameObject[3];
+            entertainment.prefab[0] = Resources.Load("Buildings/b1") as GameObject;
+            entertainment.prefab[1] = Resources.Load("Buildings/b2") as GameObject;
+            entertainment.prefab[2] = Resources.Load("Buildings/b3") as GameObject;
 
         }
         if (residental == null)
@@ -44,11 +43,12 @@ public class BuildManager
             GameObject happiness = Resources.Load("Status/happiness") as GameObject;
             residental.status = happiness;
             residental.cost = 20;
-            residental.number = 3;
-            residental.prefab = new GameObject[3];
-            residental.prefab[0] = Resources.Load("Buildings/b1") as GameObject;
-            residental.prefab[1] = Resources.Load("Buildings/b2") as GameObject;
-            residental.prefab[2] = Resources.Load("Buildings/b3") as GameObject;
+            residental.number = 4;
+            residental.prefab = new GameObject[4];
+            residental.prefab[0] = Resources.Load("Buildings/a1") as GameObject;
+            residental.prefab[1] = Resources.Load("Buildings/a2") as GameObject;
+            residental.prefab[2] = Resources.Load("Buildings/a3") as GameObject;
+            residental.prefab[3] = Resources.Load("Buildings/a4") as GameObject;
         }
 
         if (industry == null)
