@@ -22,17 +22,22 @@ public class Tile {
     public GameObject happyStatus;
     public GameObject powerStatus;
     public GameObject populStatus;
+    public GameObject wrkerStatus;
     bool waterAnimBool;
     bool powerAnimBool;
     
     // Does this tile rest within the range of a power plant/water plant?
     public bool electricity { get; set; }
     public bool water { get; set; }
-
+    public bool industrial { get; set; }
+    public bool entertainment { get; set; }
     public int level;
     public int happiness { get; set; }
     private int hiddenHappiness;
     public int population { get; set; }
+    public int popCapacityInd { get; set; }
+    public int popCapacityEnt { get; set; }
+    public int popIndEnt { get; set; }
     public int maxPopulation { get; set; }
 
     public int electricityResources;
@@ -55,7 +60,6 @@ public class Tile {
         
     }
 
-    
     bool highlightedValue = false;
     public bool highlighted
     {
@@ -141,6 +145,9 @@ public class Tile {
         this.Y = y;
         this.happiness = 0;
         this.hiddenHappiness = 0;
+        this.popCapacityInd = 0;
+        this.popCapacityEnt = 0;
+        this.popIndEnt = 0;
         this.waterAnimBool = false;
         this.powerAnimBool = false;
     }
@@ -314,8 +321,9 @@ public class Tile {
         {
             this.happiness = this.hiddenHappiness;
         }
-        Debug.Log(this.happiness);
     }
+
+    
 
     public void printTileStats()
     {

@@ -20,7 +20,8 @@ public class WorldController : MonoBehaviour
     public List<Tile> powerTiles;
     public List<Tile> waterTiles;
     public List<Tile> allTiles;
-
+    public List<Tile> indusTiles;
+    public List<Tile> enterTiles;
     Dictionary<Furniture, GameObject> furnitureGameObjectMap;
     Dictionary<string, Sprite> furnitureSprites;
     //List<Building> buildings;
@@ -47,6 +48,8 @@ public class WorldController : MonoBehaviour
         Instance = this;
         powerTiles = new List<Tile>();
         waterTiles = new List<Tile>();
+        indusTiles = new List<Tile>();
+        enterTiles = new List<Tile>();
         allTiles = new List<Tile>();
         // Create a world with Empty tiles
         world = new World(worldX, worldY);
@@ -144,6 +147,20 @@ public class WorldController : MonoBehaviour
                 tile_data.populStatus.transform.localScale = new Vector3(5f, 5f, 5f);
                 tile_data.populStatus.name = (tile_go.name + "PopulStatus");
                 tile_data.populStatus.SetActive(false);
+
+                tile_data.wrkerStatus = new GameObject();
+                tile_data.wrkerStatus.transform.parent = tile_go.transform;
+                MeshRenderer kmr = tile_data.wrkerStatus.AddComponent<MeshRenderer>();
+                kmr.material = Resources.Load<Material>("Status/Materials/wrkerMaterial");
+                MeshFilter kmf = tile_data.wrkerStatus.AddComponent<MeshFilter>();
+                kmf.mesh = populMesh;
+                Animator kanimator = tile_data.wrkerStatus.AddComponent<Animator>();
+                kanimator.runtimeAnimatorController = Resources.Load<RuntimeAnimatorController>("Animations/Tile_0_8PowerStatus");
+                tile_data.wrkerStatus.transform.position = tile_go.transform.position + (tile_go.transform.rotation * new Vector3(0.5f, 0.5f, -3));
+                tile_data.wrkerStatus.transform.rotation = tile_go.transform.rotation * Quaternion.Euler(180, 0, 0);
+                tile_data.wrkerStatus.transform.localScale = new Vector3(5f, 5f, 5f);
+                tile_data.wrkerStatus.name = (tile_go.name + "WrkerStatus");
+                tile_data.wrkerStatus.SetActive(false);
 
 
                 tile_bc.center = bc_center;
@@ -291,7 +308,6 @@ public class WorldController : MonoBehaviour
         else if (tile_data.Type == Tile.TileType.Industrial)
         {
             tile_go.GetComponent<SpriteRenderer>().sprite = industrialSprite;
-
             tile_data.setTileData(0, 3, 2, 0, 0, 0);
         }
         else if (tile_data.Type == Tile.TileType.Entertainment)
@@ -302,12 +318,12 @@ public class WorldController : MonoBehaviour
         else if (tile_data.Type == Tile.TileType.Water)
         {
             tile_go.GetComponent<SpriteRenderer>().sprite = waterSprite;
-            tile_data.setTileData(0, 2, 0, 0, 0, 50);
+            tile_data.setTileData(0, 2, 0, 0, 0, 20);
         }
         else if (tile_data.Type == Tile.TileType.Electricity)
         {
             tile_go.GetComponent<SpriteRenderer>().sprite = electricitySprite;
-            tile_data.setTileData(0, 0, 0, 0, 50, 0);
+            tile_data.setTileData(0, 0, 0, 0, 20, 0);
         }
     }
 
@@ -377,7 +393,7 @@ public class WorldController : MonoBehaviour
     {
         if (obj.linksToNeighbour == false)
         {
-            Debug.Log(obj.objectType);
+            //Debug.Log(obj.objectType);
             return furnitureSprites[obj.objectType];
         }
 
@@ -433,23 +449,27 @@ public class WorldController : MonoBehaviour
         // 5 Manhattan distance radius.
 
         // resourceType: 0 = water, 1 = electricity
-        Debug.Log("Updating tile resources");
+        //Debug.Log("Updating tile resources");
         int currentResource;
         if (!resourceType)
         {
             currentResource = epicentre.waterResources;
-            Debug.Log("Water");
+            if (!epicentre.electricity)
+            {
+                return;
+            }
+            //Debug.Log("Water");
             
         }
         else
         {
             currentResource = epicentre.electricityResources;
-            Debug.Log("Power");
+            //Debug.Log("Power");
         }
         
-        for(int i = -5; i < 6; i++) // X axis
+        for(int i = -6; i < 7; i++) // X axis
         {
-            for(int j = -5; j < 6; j++) // Y axis
+            for(int j = -6; j < 7; j++) // Y axis
             {
                 int currentX = epicentre.X + i;
                 int currentY = epicentre.Y + j;
@@ -481,8 +501,8 @@ public class WorldController : MonoBehaviour
                         //currentTile.hasPower = currentTile.needPower;
                         currentTile.increaseHappiness(5);
                         currentResource -= currentTile.needPower;
-                        Debug.Log("Updated the resources on this tile");
-                        Debug.Log(currentX.ToString() + " " + currentY.ToString());
+                        //Debug.Log("Updated the resources on this tile");
+                        //Debug.Log(currentX.ToString() + " " + currentY.ToString());
                     }
                     else if(currentResource < currentTile.needPower)
                     {
@@ -502,8 +522,8 @@ public class WorldController : MonoBehaviour
                         //currentTile.hasWater = currentTile.needWater;
                         currentTile.increaseHappiness(5);
                         currentResource -= currentTile.needWater;
-                        Debug.Log("Updated the resources on this tile");
-                        Debug.Log(currentX.ToString() + " " + currentY.ToString());
+                        //Debug.Log("Updated the resources on this tile");
+                        //Debug.Log(currentX.ToString() + " " + currentY.ToString());
                     }
                     else if (currentResource < currentTile.needWater)
                     {
@@ -548,8 +568,8 @@ public class WorldController : MonoBehaviour
 
         Tile.TileType happinessType = epicentre.Type;
         int[] happinessArrayP = new int[] { 0, 8, 6, 4, 2 };
-        int[] happinessArrayE = new int[] { 0, 10, 10, 10, 8, 8, 6, 6, 4, 4, 2 };
-        int[] happinessArrayI = new int[] { 0, 8, 8, 6, 6, 6, 6, 6, 4, 4, 4 };
+        int[] happinessArrayE = new int[] { 0, 5, 5, 5, 4, 4, 3, 3, 2, 2, 1 };
+        int[] happinessArrayI = new int[] { 0, 4, 4, 3, 3, 3, 3, 3, 2, 2, 2 };
 
         int affectedX = 0;
         int affectedY = 0;
@@ -615,8 +635,6 @@ public class WorldController : MonoBehaviour
 
         CalculateTotalHappinessRatio();
 
-        Debug.Log("Tile happiness has been updated.");
-
     }
 
     public int ManhattanDistance(Tile a, Tile b)
@@ -628,18 +646,14 @@ public class WorldController : MonoBehaviour
     {
         int totalHappiness = 0;
         int residentialCount = 0;
-        for(int i = 0; i < worldX; i++)
-        {
-            for(int j = 0; j < worldY; j++)
+        foreach(var t in allTiles){
+            if(t.Type == Tile.TileType.Residential)
             {
-                Tile currentTile = world.GetTileAt(i, j);
-                if(currentTile.Type == Tile.TileType.Residential)
-                {
-                    totalHappiness += currentTile.happiness;
-                    residentialCount += 1;
-                }
+                totalHappiness += t.happiness;
+                residentialCount += 1;
             }
         }
+        
         if(residentialCount == 0)
         {
             CurrentHappinessRatio = 0;
@@ -651,6 +665,8 @@ public class WorldController : MonoBehaviour
         Debug.Log("Current HRatio: " + CurrentHappinessRatio.ToString());
     }
 
+
+    
 
 }
 

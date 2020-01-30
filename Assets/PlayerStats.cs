@@ -14,15 +14,23 @@ public class PlayerStats
     private int startMoney = 400;
     public int residentialCount { get; set; }
     public int industrialCount { get; set; }
+    public int residentialOnCount { get; set; }
+    public int industrialOnCount { get; set; }
+    public int entertainmentOnCount { get; set; }
     public int entertainmentCount { get; set; }
     public int countInitValue = 0;
 
     public PlayerStats()
     {
         Money = startMoney;
+        
         residentialCount = countInitValue;
         industrialCount = countInitValue;
         entertainmentCount = countInitValue;
+        residentialOnCount = countInitValue;
+        industrialOnCount = countInitValue;
+        entertainmentOnCount = countInitValue;
+
         water = countInitValue;
         electricity = countInitValue;
         Debug.Log("Player stats initialized");

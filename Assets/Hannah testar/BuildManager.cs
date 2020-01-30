@@ -104,26 +104,23 @@ public class BuildManager
         if(objectToBuild == entertainment)
         {
             WorldController.Instance.playerstats.entertainmentCount += 1;
-            Debug.Log("Current entertainment count: " + WorldController.Instance.playerstats.entertainmentCount);
             position.y += 1f;
             WorldController.Instance.world.PlaceFurniture("Building", parentTile);
             parentTile.Type = Tile.TileType.Entertainment;
+            WorldController.Instance.enterTiles.Add(parentTile);
         }
         if (objectToBuild == residental)
         {
             WorldController.Instance.playerstats.residentialCount += 1;
-            Debug.Log("Current residential count: " + WorldController.Instance.playerstats.residentialCount.ToString() + " Happiness: " + parentTile.happiness.ToString() );
             WorldController.Instance.world.PlaceFurniture("Building", parentTile);
-            GameObject happyObject = (GameObject)WorldController.Instance.WrapInstantiate(objectToBuild.status, parentTile.gameObject.transform.position, parentTile.gameObject.transform.rotation);
-            happyObject.transform.position = happyObject.transform.rotation * new Vector3(0, 1, 0);
             parentTile.Type = Tile.TileType.Residential;
         }
         if (objectToBuild == industry)
         {
             WorldController.Instance.playerstats.industrialCount += 1;
-            Debug.Log("Current industry count: " + WorldController.Instance.playerstats.industrialCount);
             WorldController.Instance.world.PlaceFurniture("Building", parentTile);
             parentTile.Type = Tile.TileType.Industrial;
+            WorldController.Instance.indusTiles.Add(parentTile);
         }
 
         if (objectToBuild == watertower)
@@ -133,7 +130,6 @@ public class BuildManager
             parentTile.Type = Tile.TileType.Water;
             WorldController.Instance.UpdateTileResources(parentTile, false, true);
             WorldController.Instance.waterTiles.Add(parentTile);
-            Debug.Log("Current water tower count: " + WorldController.Instance.playerstats.water);
         }
         if (objectToBuild == powerplant)
         {
@@ -142,26 +138,24 @@ public class BuildManager
             parentTile.Type = Tile.TileType.Electricity;
             WorldController.Instance.UpdateTileResources(parentTile, true, true);
             WorldController.Instance.powerTiles.Add(parentTile);
-            Debug.Log("Current power plant count: " + WorldController.Instance.playerstats.electricity);
         }
         WorldController.Instance.UpdateTileHappiness(parentTile, 1);
         Debug.Log("Object built! Money left: " + WorldController.Instance.playerstats.Money.ToString());
-        if (WorldController.Instance.waterTiles.Count > 0)
-        {
-            foreach (var resourceTile in WorldController.Instance.waterTiles)
-            {
-                WorldController.Instance.UpdateTileResources(resourceTile, false, true);
-                Debug.Log("Looping through water");
-            }
-        }
         if(WorldController.Instance.powerTiles.Count > 0)
         {
             foreach (var resourceTile in WorldController.Instance.powerTiles)
             {
                 WorldController.Instance.UpdateTileResources(resourceTile, true, true);
-                Debug.Log("Looping through power");
             } 
         }
+        if (WorldController.Instance.waterTiles.Count > 0)
+        {
+            foreach (var resourceTile in WorldController.Instance.waterTiles)
+            {
+                WorldController.Instance.UpdateTileResources(resourceTile, false, true);
+            }
+        }
+
         GameObject go = (GameObject)WorldController.Instance.WrapInstantiate(objectToBuild.Randomize(), parentTile.gameObject.transform.position, parentTile.gameObject.transform.rotation);
         go.transform.localScale = new Vector3(0.9f, 0.9f, 0.9f);
         objectToBuild = null;
