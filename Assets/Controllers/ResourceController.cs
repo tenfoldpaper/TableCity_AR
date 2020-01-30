@@ -38,8 +38,8 @@ public class ResourceController : MonoBehaviour
     void UpdatePlayerMoney()
     {
         UpdateOnBuildingCount();
-        int newMoney = (10 * WorldController.Instance.playerstats.entertainmentOnCount) + (15 * WorldController.Instance.playerstats.industrialOnCount) 
-            + ((int)(WorldController.Instance.CurrentHappinessRatio * 8.0f) * WorldController.Instance.playerstats.residentialOnCount);
+        int newMoney = (5 * WorldController.Instance.playerstats.entertainmentOnCount) + (10 * WorldController.Instance.playerstats.industrialOnCount) 
+            + ((int)(WorldController.Instance.CurrentHappinessRatio * 5.0f) * WorldController.Instance.playerstats.residentialOnCount);
         newMoney -= (15 * WorldController.Instance.playerstats.electricity) + (10 * WorldController.Instance.playerstats.water);
 
         WorldController.Instance.playerstats.Money += newMoney;

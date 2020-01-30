@@ -257,7 +257,7 @@ public class WorldController : MonoBehaviour
                 WorldController.Instance.world.PlaceFurniture("Road", t);
                 t.Type = Tile.TileType.Road;
                 //Debug.Log("Road created at " + t.X + " " + t.Y);
-                playerstats.Money -= 10;
+                playerstats.Money -= 5;
             }
             else
             {
@@ -318,12 +318,12 @@ public class WorldController : MonoBehaviour
         else if (tile_data.Type == Tile.TileType.Water)
         {
             tile_go.GetComponent<SpriteRenderer>().sprite = waterSprite;
-            tile_data.setTileData(0, 2, 0, 0, 0, 20);
+            tile_data.setTileData(0, 2, 0, 0, 0, 15);
         }
         else if (tile_data.Type == Tile.TileType.Electricity)
         {
             tile_go.GetComponent<SpriteRenderer>().sprite = electricitySprite;
-            tile_data.setTileData(0, 0, 0, 0, 20, 0);
+            tile_data.setTileData(0, 0, 0, 0, 15, 0);
         }
     }
 

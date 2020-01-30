@@ -29,7 +29,7 @@ public class BuildManager
         if (entertainment == null)
         {
             entertainment = new Blueprint();
-            entertainment.cost = 0;
+            entertainment.cost = 30;
             entertainment.number = 4;
             entertainment.prefab = new GameObject[4];
             entertainment.prefab[0] = Resources.Load("Buildings/a1") as GameObject;
@@ -43,7 +43,7 @@ public class BuildManager
             residental = new Blueprint();
             GameObject happiness = Resources.Load("Status/happiness") as GameObject;
             residental.status = happiness;
-            residental.cost = 0;
+            residental.cost = 20;
             residental.number = 3;
             residental.prefab = new GameObject[3];
             residental.prefab[0] = Resources.Load("Buildings/b1") as GameObject;
@@ -54,7 +54,7 @@ public class BuildManager
         if (industry == null)
         {
             industry = new Blueprint();
-            industry.cost = 0;
+            industry.cost = 30;
             industry.number = 2;
             industry.prefab = new GameObject[3];
             industry.prefab[0] = Resources.Load("Buildings/c1") as GameObject;
@@ -64,7 +64,7 @@ public class BuildManager
         if (watertower == null)
         {
             watertower = new Blueprint();
-            watertower.cost = 0;
+            watertower.cost = 30;
             watertower.number = 1;
             watertower.prefab = new GameObject[1];
             watertower.prefab[0] = Resources.Load("Buildings/watertower") as GameObject;
@@ -72,7 +72,7 @@ public class BuildManager
         if (powerplant == null)
         {
             powerplant = new Blueprint();
-            powerplant.cost = 0;
+            powerplant.cost = 40;
             powerplant.number = 1;
             powerplant.prefab = new GameObject[1];
             powerplant.prefab[0] = Resources.Load("Buildings/powerplant") as GameObject;
