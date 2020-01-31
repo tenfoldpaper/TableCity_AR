@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 
 public class WorldController : MonoBehaviour
@@ -25,20 +26,20 @@ public class WorldController : MonoBehaviour
     Dictionary<Furniture, GameObject> furnitureGameObjectMap;
     Dictionary<string, Sprite> furnitureSprites;
     //List<Building> buildings;
-    
+
 
     // The world and tile data
     public World world { get; protected set; }
-    public int worldX = 20;
-    public int worldY = 20;
+    public int worldX;
+    public int worldY;
     private int MaxHappiness = 20;
     public float CurrentHappinessRatio { get; protected set; }
     public PlayerStats playerstats { get; protected set; }
 
-    // Use this for initialization
     void Start()
     {
-
+        worldX = mainMenuScript.width;
+        worldY = mainMenuScript.width;
         LoadSprites();
 
         if (Instance != null)
